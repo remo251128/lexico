@@ -707,10 +707,12 @@ body.peru {
 }
 
 
+/* Language Toggle */
 .language-toggle {
     display: flex;
-    gap: 5px;
-    margin-left: 10px;
+    gap: 3px;
+    margin-left: 5px; /* Reduced from 10px */
+    align-items: center;
 }
 
 .lang-btn {
@@ -720,7 +722,7 @@ body.peru {
     display: flex;
     align-items: center;
     gap: 2px;
-    padding: 2px 5px;
+    padding: 2px 4px;
     border-radius: 3px;
     transition: background-color 0.2s;
 }
@@ -732,22 +734,23 @@ body.peru {
 .lang-btn .flag-icon {
     width: 16px;
     height: 12px;
-    margin-right: 2px;
 }
 
 .lang-btn span {
     font-size: 0.7rem;
-    font-weight: bold;
+    font-weight: normal; /* Removed bold */
 }
 
 @media (max-width: 500px) {
     .language-toggle {
-        margin-left: 5px;
+        gap: 2px;
+        margin-left: 3px;
     }
     .lang-btn {
-        padding: 2px;
+        padding: 1px 3px;
     }
     .lang-btn span {
-        display: none;
+        font-size: 0.6rem; /* Smaller but still visible */
+        display: inline !important; /* Force show even on mobile */
     }
 }

@@ -1,7 +1,16 @@
+/*
+TRANSLATION NOTE: 
+All user-facing text must be added to the LANGUAGES object with both Spanish (es) 
+and English (en) versions. When adding new UI elements:
+1. Add the text to the LANGUAGES object under both languages
+2. Use the language keys in your code instead of hardcoded text
+3. Update the updateLanguage() function to handle the new text elements
+*/
+
 const LANGUAGES = {
     es: {
         unlimitedAttempts: "Intentos ilimitados",
-        playOtherCountries: "Juega en otros países",
+        playOtherCountries: "También prueba versiones de otros países",
         statsTitle: "Estadísticas",
         gamesPlayed: "Jugadas",
         winPercentage: "Victorias",
@@ -27,14 +36,16 @@ const LANGUAGES = {
         correctWord: "La palabra era:",
         playAgain: "Jugar otra",
         shareResults: "Compartir",
-        shareText: "Lexico LATINO {country} {guesses}/6\n\n{grid}\n\n{url}",
+        shareText: "Lexico LATINO {country} {guesses}/6\n\n{grid}",
         invalidWord: "Palabra no válida",
-        notInCountry: "Válida en español, pero no en {country}",
-        tooShort: "La palabra debe tener 5 letras"
+        tooShort: "La palabra debe tener 5 letras",
+        // Game over modal labels
+        statsLabel: "Estadísticas",
+        distributionLabel: "Distribución de intentos"
     },
     en: {
         unlimitedAttempts: "Unlimited games",
-        playOtherCountries: "Try other countries",
+        playOtherCountries: "Also try other countries' versions",
         statsTitle: "Statistics",
         gamesPlayed: "Played",
         winPercentage: "Win %",
@@ -55,15 +66,17 @@ const LANGUAGES = {
         exampleAbsent: "The letter <strong>U</strong> is not in the word.",
         note: "You can play as many times as you want! Each country has its own list of words with local slang.",
         monetizationNote: "<strong>Note:</strong> This version is free. In the future we might add premium features like advanced statistics or custom themes.",
-        winTitle: "You won!",
-        loseTitle: "You lost!",
+        winTitle: "You win!",
+        loseTitle: "You lose",
         correctWord: "The word was:",
         playAgain: "Play again",
         shareResults: "Share",
-        shareText: "Lexico LATINO {country} {guesses}/6\n\n{grid}\n\n{url}",
+        shareText: "Lexico LATINO {country} {guesses}/6\n\n{grid}",
         invalidWord: "Invalid word",
-        notInCountry: "Valid in Spanish, but not in {country}",
-        tooShort: "Word must be 5 letters"
+        tooShort: "Word must be 5 letters",
+        // Game over modal labels
+        statsLabel: "Statistics",
+        distributionLabel: "Guess distribution"
     }
 };
 
@@ -448,23 +461,21 @@ function setupEventListeners() {
 function updateLanguage() {
     const lang = LANGUAGES[currentLanguage];
     
-    // Update unlimited attempts label
+    // Update all UI elements
     document.querySelector('.timer').textContent = lang.unlimitedAttempts;
-    
-    // Update country selector label
     document.querySelector('.country-selector h3').textContent = lang.playOtherCountries;
     
-    // Update stats modal
+    // Stats modal
     document.querySelector('#stats-modal h2').textContent = lang.statsTitle;
-    document.querySelector('#stats-modal .stat-label:nth-child(1)').textContent = lang.gamesPlayed;
-    document.querySelector('#stats-modal .stat-label:nth-child(2)').textContent = lang.winPercentage;
-    document.querySelector('#stats-modal .stat-label:nth-child(3)').textContent = lang.currentStreak;
-    document.querySelector('#stats-modal .stat-label:nth-child(4)').textContent = lang.maxStreak;
+    document.querySelectorAll('#stats-modal .stat-label')[0].textContent = lang.gamesPlayed;
+    document.querySelectorAll('#stats-modal .stat-label')[1].textContent = lang.winPercentage;
+    document.querySelectorAll('#stats-modal .stat-label')[2].textContent = lang.currentStreak;
+    document.querySelectorAll('#stats-modal .stat-label')[3].textContent = lang.maxStreak;
     document.querySelector('#stats-modal h3').textContent = lang.guessDistribution;
     document.querySelector('#stats-modal .share-btn').innerHTML = `<i class="fas fa-share-alt"></i> ${lang.share}`;
     document.querySelector('#stats-modal .next-word-timer p').textContent = lang.nextGame;
     
-    // Update info modal
+    // Info modal
     document.querySelector('#info-modal h2').textContent = lang.howToPlay;
     const instructions = document.querySelectorAll('#info-modal .instructions p');
     lang.instructions.forEach((text, i) => {
@@ -477,9 +488,17 @@ function updateLanguage() {
     document.querySelector('#info-modal .instructions p:last-child').innerHTML = lang.note;
     document.querySelector('#info-modal .monetization-note p').innerHTML = lang.monetizationNote;
     
-    // Update game over modal
+    // Game over modal
+    document.querySelector('#game-over-modal h2').textContent = lang.winTitle;
+    document.querySelector('#game-over-modal h3').textContent = lang.distributionLabel;
     document.querySelector('#game-over-modal .action-buttons button:first-child').textContent = lang.playAgain;
     document.querySelector('#game-over-modal .action-buttons .share-btn').innerHTML = `<i class="fas fa-share-alt"></i> ${lang.shareResults}`;
+    
+    // Update stats container labels in game over modal
+    document.querySelectorAll('#game-over-modal .stat-label')[0].textContent = lang.gamesPlayed;
+    document.querySelectorAll('#game-over-modal .stat-label')[1].textContent = lang.winPercentage;
+    document.querySelectorAll('#game-over-modal .stat-label')[2].textContent = lang.currentStreak;
+    document.querySelectorAll('#game-over-modal .stat-label')[3].textContent = lang.maxStreak;
 }
 
 
