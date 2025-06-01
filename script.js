@@ -41,7 +41,18 @@ const LANGUAGES = {
         tooShort: "La palabra debe tener 5 letras",
         // Game over modal labels
         statsLabel: "Estadísticas",
-        distributionLabel: "Distribución de intentos"
+        distributionLabel: "Distribución de intentos",
+
+        exampleCorrect: "La letra <strong>B</strong> está en la palabra y en la posición correcta.",
+        examplePresent: "La letra <strong>A</strong> está en la palabra pero en la posición incorrecta.",
+        exampleAbsent: "La letra <strong>Ú</strong> no está en la palabra.",
+        gamesPlayed: "Jugadas",
+        winPercentage: "Victorias",
+        currentStreak: "Racha actual",
+        maxStreak: "Racha máxima",
+        guessDistribution: "Distribución de intentos",
+        playAgain: "Jugar otra",
+        shareResults: "Compartir"
     },
     en: {
         unlimitedAttempts: "Unlimited games",
@@ -76,7 +87,18 @@ const LANGUAGES = {
         tooShort: "Word must be 5 letters",
         // Game over modal labels
         statsLabel: "Statistics",
-        distributionLabel: "Guess distribution"
+        distributionLabel: "Guess distribution",
+
+        exampleCorrect: "The letter <strong>B</strong> is in the word and in the correct position.",
+        examplePresent: "The letter <strong>A</strong> is in the word but in the wrong position.",
+        exampleAbsent: "The letter <strong>U</strong> is not in the word.",
+        gamesPlayed: "Played",
+        winPercentage: "Win %",
+        currentStreak: "Current streak",
+        maxStreak: "Max streak",
+        guessDistribution: "Guess distribution",
+        playAgain: "Play again",
+        shareResults: "Share"
     }
 };
 
@@ -475,17 +497,28 @@ function updateLanguage() {
     document.querySelector('#stats-modal .share-btn').innerHTML = `<i class="fas fa-share-alt"></i> ${lang.share}`;
     document.querySelector('#stats-modal .next-word-timer p').textContent = lang.nextGame;
     
-    // Info modal
+    // Info modal - Complete translation update
     document.querySelector('#info-modal h2').textContent = lang.howToPlay;
-    const instructions = document.querySelectorAll('#info-modal .instructions p');
+    
+    // Update instructions
+    const instructions = document.querySelectorAll('#info-modal .instructions p:not(.examples p)');
     lang.instructions.forEach((text, i) => {
         if (instructions[i]) instructions[i].textContent = text;
     });
+    
+    // Update examples section
     document.querySelector('#info-modal .examples h3').textContent = lang.examples;
-    document.querySelector('#info-modal .examples p:nth-child(2)').innerHTML = lang.exampleCorrect;
-    document.querySelector('#info-modal .examples p:nth-child(4)').innerHTML = lang.examplePresent;
-    document.querySelector('#info-modal .examples p:nth-child(6)').innerHTML = lang.exampleAbsent;
-    document.querySelector('#info-modal .instructions p:last-child').innerHTML = lang.note;
+    const exampleParagraphs = document.querySelectorAll('#info-modal .examples p');
+    if (exampleParagraphs.length >= 3) {
+        exampleParagraphs[0].innerHTML = lang.exampleCorrect;
+        exampleParagraphs[1].innerHTML = lang.examplePresent;
+        exampleParagraphs[2].innerHTML = lang.exampleAbsent;
+
+    }
+    
+    // Update notes
+    document.querySelector('#info-modal .instructions p.note-text').innerHTML = lang.note;
+    
     document.querySelector('#info-modal .monetization-note p').innerHTML = lang.monetizationNote;
     
     // Game over modal
@@ -841,6 +874,25 @@ function gameLost() {
 
 
 function updateGameOverStats() {
+
+
+    const lang = LANGUAGES[currentLanguage];
+    
+    // Update stats labels
+    document.querySelectorAll('#game-over-modal .stat-label')[0].textContent = lang.gamesPlayed;
+    document.querySelectorAll('#game-over-modal .stat-label')[1].textContent = lang.winPercentage;
+    document.querySelectorAll('#game-over-modal .stat-label')[2].textContent = lang.currentStreak;
+    document.querySelectorAll('#game-over-modal .stat-label')[3].textContent = lang.maxStreak;
+    
+    // Update distribution title
+    document.querySelector('#game-over-modal h3').textContent = lang.guessDistribution;
+    
+    // Update buttons
+    document.querySelector('#game-over-modal .action-buttons button:first-child').textContent = lang.playAgain;
+    document.querySelector('#game-over-modal .action-buttons .share-btn').innerHTML = 
+        `<i class="fas fa-share-alt"></i> ${lang.shareResults}`;
+
+
     // Update the stats display
     document.getElementById('game-over-games-played').textContent = stats.gamesPlayed;
     document.getElementById('game-over-win-percentage').textContent = 

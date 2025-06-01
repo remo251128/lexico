@@ -711,7 +711,9 @@ body.peru {
 .language-toggle {
     display: flex;
     gap: 3px;
-    margin-left: 5px; /* Reduced from 10px */
+    margin-left: 0; /* Remove left margin */
+    margin-right: auto; /* Push to the left */
+    padding-left: 5px; /* Small padding to align with tiles */
     align-items: center;
 }
 
@@ -741,6 +743,9 @@ body.peru {
     font-weight: normal; /* Removed bold */
 }
 
+
+
+
 @media (max-width: 500px) {
     .language-toggle {
         gap: 2px;
@@ -752,5 +757,10 @@ body.peru {
     .lang-btn span {
         font-size: 0.6rem; /* Smaller but still visible */
         display: inline !important; /* Force show even on mobile */
+    }
+}
+@media (min-width: 500px) {
+    .info-bar {
+        padding-left: 10px; /* Match board padding */
     }
 }
