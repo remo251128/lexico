@@ -781,6 +781,10 @@ body.peru {
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     transition: all 0.3s ease;
     width: fit-content;
+    
+    -webkit-text-size-adjust: 100%; /* Disable mobile zoom */
+    text-size-adjust: 100%; /* Standard property */
+    max-height: 36px; /* Prevent vertical expansion */
     /*min-width: 220px; 
     height: 36px; */
 }
@@ -814,6 +818,13 @@ body.peru {
 
 /* Mobile specific */
 @media (max-width: 767px) {
+    
+    .other-versions-btn {
+        font-size: 12px !important; /* Force smaller size */
+        transform: scale(0.95); /* Optional: Slight scaling if needed */
+        line-height: 1.2; /* Prevent vertical overflow */
+    }
+    
     .other-versions-btn-container {
         order: 1; /* Ensure it stays at bottom */
     }
