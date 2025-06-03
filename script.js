@@ -10,7 +10,7 @@ and English (en) versions. When adding new UI elements:
 const LANGUAGES = {
     es: {
         unlimitedAttempts: "Intentos ilimitados",
-        playOtherCountries: "También prueba versiones de otros países",
+        playOtherCountries: "Juega en otros países:",
         statsTitle: "Estadísticas",
         gamesPlayed: "Jugadas",
         winPercentage: "Victorias",
@@ -52,7 +52,8 @@ const LANGUAGES = {
         maxStreak: "Racha máxima",
         guessDistribution: "Distribución de intentos",
         playAgain: "Jugar otra",
-        shareResults: "Compartir"
+        shareResults: "Compartir",
+        otherVersions: "Prueba nuestras otras versiones del juego"
     },
     en: {
         unlimitedAttempts: "Unlimited games",
@@ -98,7 +99,8 @@ const LANGUAGES = {
         maxStreak: "Max streak",
         guessDistribution: "Guess distribution",
         playAgain: "Play again",
-        shareResults: "Share"
+        shareResults: "Share",
+        otherVersions: "Take a look at our other versions of the game"
     }
 };
 
@@ -532,6 +534,8 @@ function updateLanguage() {
     document.querySelectorAll('#game-over-modal .stat-label')[1].textContent = lang.winPercentage;
     document.querySelectorAll('#game-over-modal .stat-label')[2].textContent = lang.currentStreak;
     document.querySelectorAll('#game-over-modal .stat-label')[3].textContent = lang.maxStreak;
+
+    document.getElementById('other-versions-btn').textContent = lang.otherVersions;
 }
 
 

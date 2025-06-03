@@ -95,6 +95,7 @@ h1 {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    padding-bottom: 5px;
 }
 
 .info-bar {
@@ -243,6 +244,7 @@ h1 {
     margin-top: 20px;
     padding: 15px 0;
     border-top: 1px solid var(--light-gray);
+    padding-bottom: 5px;
 }
 
 .country-selector h3 {
@@ -762,5 +764,57 @@ body.peru {
 @media (min-width: 500px) {
     .info-bar {
         padding-left: 10px; /* Match board padding */
+    }
+}
+
+/* Button styles */
+.other-versions-btn {
+    background-color: #111111;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 200px;
+    cursor: pointer;
+    white-space: nowrap;
+    margin: 10px auto;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+    width: fit-content;
+    /*min-width: 220px; 
+    height: 36px; */
+}
+
+/* Glow effect */
+.other-versions-btn:hover {
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8),
+                0 0 25px rgba(255, 0, 255, 0.6),
+                0 0 35px rgba(0, 255, 255, 0.4);
+}
+
+/* Positioning */
+.other-versions-btn-container {
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+/* Desktop specific */
+@media (min-width: 768px) {
+    .country-selector {
+        margin-bottom: 5px; /* Reduce space to prevent scrolling */
+    }
+    
+    .other-versions-btn {
+        font-size: 11px; /* Slightly smaller on desktop */
+        padding: 6px 12px;
+    }
+}
+
+/* Mobile specific */
+@media (max-width: 767px) {
+    .other-versions-btn-container {
+        order: 1; /* Ensure it stays at bottom */
     }
 }
