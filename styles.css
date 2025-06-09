@@ -857,3 +857,55 @@ body.peru {
         order: 1; /* Ensure it stays at bottom */
     }
 }
+
+
+/* Game Modes Modal */
+.game-modes-content {
+  max-width: 90%;
+  width: 400px;
+}
+
+.game-mode-category {
+  margin-bottom: 20px;
+}
+
+.category-title {
+  color: var(--primary-color);
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--light-gray);
+  padding-bottom: 5px;
+}
+
+.game-mode-option {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  margin: 5px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.game-mode-option:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.game-mode-icon {
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+.game-mode-name {
+  font-size: 0.95rem;
+}
+
+@media (max-width: 767px) {
+  .game-modes-content {
+    width: 90%;
+  }
+  
+  .game-mode-option {
+    padding: 10px 15px;
+  }
+}

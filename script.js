@@ -53,7 +53,11 @@ const LANGUAGES = {
         guessDistribution: "Distribución de intentos",
         playAgain: "Jugar otra",
         shareResults: "Compartir",
-        otherVersions: "Prueba nuestras otras versiones del juego"
+        otherVersions: "Prueba nuestras otras versiones del juego",
+        selectGameMode: "Selecciona un Modo de Juego",
+    footballCategory: "Fútbol",
+    footballPlayers: "Jugadores de Fútbol - 5 Letras",
+    slangCategory: "Jerga Latina"
     },
     en: {
         unlimitedAttempts: "Unlimited games",
@@ -100,7 +104,11 @@ const LANGUAGES = {
         guessDistribution: "Guess distribution",
         playAgain: "Play again",
         shareResults: "Share",
-        otherVersions: "Take a look at our other versions of the game"
+        otherVersions: "Take a look at our other versions of the game",
+        selectGameMode: "Select a Game Mode",
+    footballCategory: "Football/Soccer",
+    footballPlayers: "5 letter Football Players",
+    slangCategory: "Latin Slang"
     }
 };
 
@@ -430,6 +438,8 @@ function init() {
     loadStats();
     setupEventListeners();
     newGame();
+    updateGameModesModal();
+    setupGameModeSelection();
 }
 
 // Set up event listeners
@@ -480,6 +490,63 @@ function setupEventListeners() {
     });
 });
 }
+
+
+// Handle game mode selection
+function setupGameModeSelection() {
+  const modal = document.getElementById('game-modes-modal');
+  const gameModeOptions = document.querySelectorAll('.game-mode-option');
+  
+  // Open modal when button clicked
+  document.getElementById('other-versions-btn').addEventListener('click', () => {
+    modal.style.display = 'flex';
+  });
+  
+  // Close modal
+  modal.querySelector('.close-btn').addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+  
+  // Handle mode selection
+  gameModeOptions.forEach(option => {
+    option.addEventListener('click', () => {
+      const mode = option.dataset.mode;
+      
+      if (['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(mode)) {
+        // Same functionality as flag click
+        currentCountry = mode;
+        updateCountryUI();
+        newGame();
+        
+        // Remember selection if you have that functionality
+        if (typeof saveCountryPreference === 'function') {
+          saveCountryPreference();
+        }
+      }
+      // Football players mode does nothing for now
+      
+      modal.style.display = 'none';
+    });
+  });
+}
+
+
+function updateGameModesModal() {
+  const lang = LANGUAGES[currentLanguage];
+  document.querySelector('.game-modes-title').textContent = lang.selectGameMode;
+  document.querySelector('[data-category="football"]').textContent = lang.footballCategory;
+  document.querySelector('[data-category="slang"]').textContent = lang.slangCategory;
+  
+  document.querySelector('[data-mode="football-players"] .game-mode-name').textContent = lang.footballPlayers;
+  
+  // Country modes
+  document.querySelector('[data-mode="argentina"] .game-mode-name').textContent = lang.argentina;
+  document.querySelector('[data-mode="chile"] .game-mode-name').textContent = lang.chile;
+  document.querySelector('[data-mode="peru"] .game-mode-name').textContent = lang.peru;
+  document.querySelector('[data-mode="colombia"] .game-mode-name').textContent = lang.colombia;
+  document.querySelector('[data-mode="mexico"] .game-mode-name').textContent = lang.mexico;
+}
+
 
 
 function updateLanguage() {
@@ -536,6 +603,8 @@ function updateLanguage() {
     document.querySelectorAll('#game-over-modal .stat-label')[3].textContent = lang.maxStreak;
 
     document.getElementById('other-versions-btn').textContent = lang.otherVersions;
+
+    updateGameModesModal();
 }
 
 
