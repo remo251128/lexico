@@ -859,6 +859,10 @@ body.peru {
 }
 
 
+.game-modes-title {
+  margin-bottom: 25px; /* Increased from default */
+}
+
 /* Game Modes Modal */
 .game-modes-content {
   max-width: 90%;
@@ -875,6 +879,7 @@ body.peru {
   margin-bottom: 10px;
   border-bottom: 1px solid var(--light-gray);
   padding-bottom: 5px;
+  margin-top: 15px;
 }
 
 .game-mode-option {
@@ -892,12 +897,15 @@ body.peru {
 }
 
 .game-mode-icon {
-  margin-right: 10px;
-  font-size: 1.2rem;
+  margin-right: 12px;
+  font-size: 1.3rem;
+  
+  
 }
 
 .game-mode-name {
   font-size: 0.95rem;
+  white-space: nowrap;
 }
 
 @media (max-width: 767px) {
@@ -907,5 +915,7 @@ body.peru {
   
   .game-mode-option {
     padding: 10px 15px;
+    display: flex;
+  align-items: center;
   }
 }

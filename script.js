@@ -57,7 +57,12 @@ const LANGUAGES = {
         selectGameMode: "Selecciona un Modo de Juego",
     footballCategory: "Fútbol",
     footballPlayers: "Jugadores de Fútbol - 5 Letras",
-    slangCategory: "Jerga Latina"
+    slangCategory: "Jerga Latina",
+    slangArgentina: "Jerga Argentina",
+    slangChile: "Jerga Chilena",
+    slangPeru: "Jerga Peruana",
+    slangColombia: "Jerga Colombiana",
+    slangMexico: "Jerga Mexicana"
     },
     en: {
         unlimitedAttempts: "Unlimited games",
@@ -108,7 +113,12 @@ const LANGUAGES = {
         selectGameMode: "Select a Game Mode",
     footballCategory: "Football/Soccer",
     footballPlayers: "5 letter Football Players",
-    slangCategory: "Latin Slang"
+    slangCategory: "Latin Slang",
+    slangArgentina: "Argentinian Slang",
+    slangChile: "Chilean Slang",
+    slangPeru: "Peruvian Slang",
+    slangColombia: "Colombian Slang",
+    slangMexico: "Mexican Slang"
     }
 };
 
