@@ -897,15 +897,24 @@ body.peru {
 }
 
 .game-mode-icon {
-  margin-right: 12px;
-  font-size: 1.3rem;
-  
+  /*margin-right: 12px; */
+  /*font-size: 1.3rem; */
+
+  width: 20px;
+  height: 20px; /* Uniform size */
+  object-fit: contain;
+  margin-right: 10px;
+  vertical-align: middle;
+  border: 1px solid #ddd; /* Optional subtle border */
+
   
 }
 
 .game-mode-name {
+  
   font-size: 0.95rem;
   white-space: nowrap;
+  
 }
 
 @media (max-width: 767px) {

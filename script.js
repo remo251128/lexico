@@ -550,11 +550,11 @@ function updateGameModesModal() {
   document.querySelector('[data-mode="football-players"] .game-mode-name').textContent = lang.footballPlayers;
   
   // Country modes
-  document.querySelector('[data-mode="argentina"] .game-mode-name').textContent = lang.argentina;
-  document.querySelector('[data-mode="chile"] .game-mode-name').textContent = lang.chile;
-  document.querySelector('[data-mode="peru"] .game-mode-name').textContent = lang.peru;
-  document.querySelector('[data-mode="colombia"] .game-mode-name').textContent = lang.colombia;
-  document.querySelector('[data-mode="mexico"] .game-mode-name').textContent = lang.mexico;
+  document.querySelector('[data-mode="argentina"] .game-mode-name').textContent = lang.slangArgentina;
+  document.querySelector('[data-mode="chile"] .game-mode-name').textContent = lang.slangChile;
+  document.querySelector('[data-mode="peru"] .game-mode-name').textContent = lang.slangPeru;
+  document.querySelector('[data-mode="colombia"] .game-mode-name').textContent = lang.slangColombia;
+  document.querySelector('[data-mode="mexico"] .game-mode-name').textContent = lang.slangMexico;
 }
 
 
