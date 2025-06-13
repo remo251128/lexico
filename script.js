@@ -30,7 +30,7 @@ const LANGUAGES = {
         examplePresent: "La letra <strong>A</strong> está en la palabra pero en la posición incorrecta.",
         exampleAbsent: "La letra <strong>Ú</strong> no está en la palabra.",
         note: "¡Puedes jugar tantas veces como quieras! Cada país tiene su propia lista de palabras con jerga local.",
-        monetizationNote: "<strong>Nota:</strong> Esta versión es gratuita. En el futuro podríamos añadir características premium como estadísticas avanzadas o temas personalizados.",
+        monetizationNote: "Nota: Esta versión es gratuita. En el futuro podríamos añadir características premium como estadísticas avanzadas o temas personalizados.",
         winTitle: "¡Ganaste!",
         loseTitle: "¡Perdiste!",
         correctWord: "La palabra era:",
@@ -42,10 +42,6 @@ const LANGUAGES = {
         // Game over modal labels
         statsLabel: "Estadísticas",
         distributionLabel: "Distribución de intentos",
-
-        exampleCorrect: "La letra <strong>B</strong> está en la palabra y en la posición correcta.",
-        examplePresent: "La letra <strong>A</strong> está en la palabra pero en la posición incorrecta.",
-        exampleAbsent: "La letra <strong>Ú</strong> no está en la palabra.",
         gamesPlayed: "Jugadas",
         winPercentage: "Victorias",
         currentStreak: "Racha actual",
@@ -56,7 +52,7 @@ const LANGUAGES = {
         otherVersions: "Prueba nuestras otras versiones del juego",
         selectGameMode: "Selecciona un Modo de Juego",
     footballCategory: "Fútbol",
-    footballPlayers: "Jugadores de Fútbol - 5 Letras",
+    footballPlayers: "Jugadores de Fútbol",
     slangCategory: "Jerga Latina",
     slangArgentina: "Jerga Argentina",
     slangChile: "Jerga Chilena",
@@ -86,7 +82,7 @@ const LANGUAGES = {
         examplePresent: "The letter <strong>A</strong> is in the word but in the wrong position.",
         exampleAbsent: "The letter <strong>U</strong> is not in the word.",
         note: "You can play as many times as you want! Each country has its own list of words with local slang.",
-        monetizationNote: "<strong>Note:</strong> This version is free. In the future we might add premium features like advanced statistics or custom themes.",
+        monetizationNote: "Note: This version is free. In the future we might add premium features like advanced statistics or custom themes.",
         winTitle: "You win!",
         loseTitle: "You lose",
         correctWord: "The word was:",
@@ -98,10 +94,6 @@ const LANGUAGES = {
         // Game over modal labels
         statsLabel: "Statistics",
         distributionLabel: "Guess distribution",
-
-        exampleCorrect: "The letter <strong>B</strong> is in the word and in the correct position.",
-        examplePresent: "The letter <strong>A</strong> is in the word but in the wrong position.",
-        exampleAbsent: "The letter <strong>U</strong> is not in the word.",
         gamesPlayed: "Played",
         winPercentage: "Win %",
         currentStreak: "Current streak",
@@ -112,7 +104,7 @@ const LANGUAGES = {
         otherVersions: "Take a look at our other versions of the game",
         selectGameMode: "Select a Game Mode",
     footballCategory: "Football/Soccer",
-    footballPlayers: "5 letter Football Players",
+    footballPlayers: "Football Players",
     slangCategory: "Latin Slang",
     slangArgentina: "Argentinian Slang",
     slangChile: "Chilean Slang",
@@ -253,6 +245,9 @@ chileformer: [
     argentinaformer: [
         "trolo", "yetas", "zarpa",
         "guita", "pende", "jodas", "pucho", "pucho", "pucho", "birra", "pucho", "piola", "pucho"
+    ],
+    jugadores_de_futbol: [
+        "messi", "lewis", "pedri", "kroos", "kante"
     ]
 };
 
@@ -370,10 +365,38 @@ const shareResultBtn = document.getElementById('share-result-btn');
 
 function isValidWord(guess) {
     const guessLower = guess.toLowerCase();
+    
+    if (currentCountry === 'football-players') {
+        return WORD_LISTS.jugadores_de_futbol.includes(guessLower);
+    }
+    
     return WORD_LISTS.general.includes(guessLower) || WORD_LISTS[currentCountry].includes(guessLower);
 }
 
+function updateInfoModalContent() {
+    const modal = document.getElementById('info-modal');
+    if (!modal) return;
+    
+    modal.querySelector('h2').textContent = LANGUAGES[currentLanguage].howToPlay;
+    // Add all other info modal translations...
+}
 
+function updateStatsModalContent() {
+    const modal = document.getElementById('stats-modal');
+    if (!modal) return;
+    
+    modal.querySelector('h2').textContent = LANGUAGES[currentLanguage].statsTitle;
+    // Add all other stats modal translations...
+}
+
+function updateGameOverModalContent() {
+    const modal = document.getElementById('game-over-modal');
+    if (!modal) return;
+    
+    // Don't update title/message here as they're game-state dependent
+    modal.querySelectorAll('.stat-label')[0].textContent = LANGUAGES[currentLanguage].gamesPlayed;
+    // Add all other game over modal translations...
+}
 
 // Submit the current guess with improved validation messaging
 /*
@@ -414,9 +437,16 @@ function submitGuess() {
 
 // Generate share text with country information
 function generateShareText() {
-    const countryName = document.querySelector('.country-flag span').textContent;
+    let title, grid = '';
+    
+    if (currentCountry === 'football-players') {
+        title = 'Wordz Football';
+    } else {
+        const countryName = document.querySelector('.country-flag span').textContent;
+        title = `Lexico LATINO ${countryName}`;
+    }
+    
     const guessCount = guesses.length === 6 ? 'X' : guesses.length;
-    let grid = '';
     
     guesses.forEach(guess => {
         const wordLetters = word.split('');
@@ -434,11 +464,7 @@ function generateShareText() {
         grid += '\n';
     });
     
-    return LANGUAGES[currentLanguage].shareText
-        .replace('{country}', countryName)
-        .replace('{guesses}', guessCount)
-        .replace('{grid}', grid)
-        .replace('{url}', 'https://lexico.lat');
+    return `${title} ${guessCount}/6\n\n${grid}`;
 }
 
 // ========== UNMODIFIED FUNCTIONS ========== //
@@ -522,16 +548,22 @@ function setupGameModeSelection() {
     option.addEventListener('click', () => {
       const mode = option.dataset.mode;
       
-      if (['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(mode)) {
+      if (mode === 'football-players') {
+                currentCountry = 'football-players';
+                updateCountryUI();
+                newGame();
+            } 
+
+      else if (['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(mode)) {
         // Same functionality as flag click
         currentCountry = mode;
         updateCountryUI();
         newGame();
         
-        // Remember selection if you have that functionality
-        if (typeof saveCountryPreference === 'function') {
-          saveCountryPreference();
-        }
+        // THIS?????
+        //if (typeof saveCountryPreference === 'function') {
+        //  saveCountryPreference();
+        //}
       }
       // Football players mode does nothing for now
       
@@ -558,63 +590,114 @@ function updateGameModesModal() {
 }
 
 
+function updateFootballDisplayText() {
+    if (currentCountry === 'football-players') {
+        const flagContainer = document.querySelector('.country-flag');
+        if (flagContainer) {
+            flagContainer.innerHTML = `
+                <span class="football-icon">⚽</span>
+                <span>${LANGUAGES[currentLanguage].footballPlayers}</span>
+            `;
+        }
+    }
+}
+
 
 function updateLanguage() {
     const lang = LANGUAGES[currentLanguage];
     
-    // Update all UI elements
-    document.querySelector('.timer').textContent = lang.unlimitedAttempts;
-    document.querySelector('.country-selector h3').textContent = lang.playOtherCountries;
+    // 1. Update CORE UI elements
+    const timer = document.querySelector('.timer');
+    const countryTitle = document.querySelector('.country-selector h3');
+    const versionBtn = document.getElementById('other-versions-btn');
     
-    // Stats modal
-    document.querySelector('#stats-modal h2').textContent = lang.statsTitle;
-    document.querySelectorAll('#stats-modal .stat-label')[0].textContent = lang.gamesPlayed;
-    document.querySelectorAll('#stats-modal .stat-label')[1].textContent = lang.winPercentage;
-    document.querySelectorAll('#stats-modal .stat-label')[2].textContent = lang.currentStreak;
-    document.querySelectorAll('#stats-modal .stat-label')[3].textContent = lang.maxStreak;
-    document.querySelector('#stats-modal h3').textContent = lang.guessDistribution;
-    document.querySelector('#stats-modal .share-btn').innerHTML = `<i class="fas fa-share-alt"></i> ${lang.share}`;
-    document.querySelector('#stats-modal .next-word-timer p').textContent = lang.nextGame;
-    
-    // Info modal - Complete translation update
-    document.querySelector('#info-modal h2').textContent = lang.howToPlay;
-    
-    // Update instructions
-    const instructions = document.querySelectorAll('#info-modal .instructions p:not(.examples p)');
-    lang.instructions.forEach((text, i) => {
-        if (instructions[i]) instructions[i].textContent = text;
-    });
-    
-    // Update examples section
-    document.querySelector('#info-modal .examples h3').textContent = lang.examples;
-    const exampleParagraphs = document.querySelectorAll('#info-modal .examples p');
-    if (exampleParagraphs.length >= 3) {
-        exampleParagraphs[0].innerHTML = lang.exampleCorrect;
-        exampleParagraphs[1].innerHTML = lang.examplePresent;
-        exampleParagraphs[2].innerHTML = lang.exampleAbsent;
+    if (timer) timer.textContent = lang.unlimitedAttempts;
+    if (countryTitle) countryTitle.textContent = lang.playOtherCountries;
+    if (versionBtn) versionBtn.textContent = lang.otherVersions;
 
+    // 2. Update MODALS with all missing strings
+    // Info Popup - Complete update
+    const infoModal = document.getElementById('info-modal');
+    if (infoModal) {
+        // Main content
+        infoModal.querySelector('h2').textContent = lang.howToPlay;
+        const infoParagraphs = infoModal.querySelectorAll('.instructions p:not(.examples p)');
+        if (infoParagraphs.length >= 3) {
+            infoParagraphs[0].textContent = lang.instructions[0];
+            infoParagraphs[1].textContent = lang.instructions[1];
+            infoParagraphs[2].textContent = lang.instructions[2];
+        }
+        
+        // Examples
+        infoModal.querySelector('.examples h3').textContent = lang.examples;
+        const examples = infoModal.querySelectorAll('.examples p');
+        if (examples.length >= 3) {
+            examples[0].innerHTML = lang.exampleCorrect;
+            examples[1].innerHTML = lang.examplePresent;
+            examples[2].innerHTML = lang.exampleAbsent;
+        }
+        
+        // Notes (FIXED STRINGS)
+        const noteText = infoModal.querySelector('.note-text');
+        const monetizationNote = infoModal.querySelector('.monetization-note p');
+        if (noteText) noteText.innerHTML = lang.note; // "¡Puedes jugar tantas veces..."
+        if (monetizationNote) monetizationNote.innerHTML = lang.monetizationNote; // "Nota: Esta versión..."
     }
-    
-    // Update notes
-    document.querySelector('#info-modal .instructions p.note-text').innerHTML = lang.note;
-    
-    document.querySelector('#info-modal .monetization-note p').innerHTML = lang.monetizationNote;
-    
-    // Game over modal
-    document.querySelector('#game-over-modal h2').textContent = lang.winTitle;
-    document.querySelector('#game-over-modal h3').textContent = lang.distributionLabel;
-    document.querySelector('#game-over-modal .action-buttons button:first-child').textContent = lang.playAgain;
-    document.querySelector('#game-over-modal .action-buttons .share-btn').innerHTML = `<i class="fas fa-share-alt"></i> ${lang.shareResults}`;
-    
-    // Update stats container labels in game over modal
-    document.querySelectorAll('#game-over-modal .stat-label')[0].textContent = lang.gamesPlayed;
-    document.querySelectorAll('#game-over-modal .stat-label')[1].textContent = lang.winPercentage;
-    document.querySelectorAll('#game-over-modal .stat-label')[2].textContent = lang.currentStreak;
-    document.querySelectorAll('#game-over-modal .stat-label')[3].textContent = lang.maxStreak;
 
-    document.getElementById('other-versions-btn').textContent = lang.otherVersions;
+    // Stats Popup - Complete update
+    const statsModal = document.getElementById('stats-modal');
+    if (statsModal) {
+        // Main stats
+        statsModal.querySelector('h2').textContent = lang.statsTitle;
+        const statLabels = statsModal.querySelectorAll('.stat-label');
+        if (statLabels.length >= 4) {
+            statLabels[0].textContent = lang.gamesPlayed;
+            statLabels[1].textContent = lang.winPercentage;
+            statLabels[2].textContent = lang.currentStreak;
+            statLabels[3].textContent = lang.maxStreak;
+        }
+        
+        // Fixed strings
+        statsModal.querySelector('h3').textContent = lang.guessDistribution;
+        const shareBtn = statsModal.querySelector('.share-btn');
+        const nextWordText = statsModal.querySelector('.next-word-timer p');
+        if (shareBtn) shareBtn.innerHTML = `<i class="fas fa-share-alt"></i> ${lang.share}`; // "Compartir"
+        if (nextWordText) nextWordText.textContent = lang.nextGame; // "Puedes jugar otra palabra..."
+    }
 
+    // 3. FOOTBALL MODE updates
+    if (currentCountry === 'football-players') {
+        const footballText = document.querySelector('.country-flag span:not(.football-icon)');
+        if (footballText) footballText.textContent = lang.footballPlayers;
+    }
+
+    // 4. Update game modes modal
     updateGameModesModal();
+}
+
+function updateModalTranslations() {
+    const lang = LANGUAGES[currentLanguage];
+    
+    // Info Modal
+    const infoModal = document.getElementById('info-modal');
+    if (infoModal) {
+        infoModal.querySelector('h2').textContent = lang.howToPlay;
+        // ... rest of info modal translations ...
+    }
+
+    // Stats Modal
+    const statsModal = document.getElementById('stats-modal');
+    if (statsModal) {
+        statsModal.querySelector('h2').textContent = lang.statsTitle;
+        // ... rest of stats modal translations ...
+    }
+
+    // Game Over Modal (static elements only)
+    const gameOverModal = document.getElementById('game-over-modal');
+    if (gameOverModal) {
+        gameOverModal.querySelector('h3').textContent = lang.distributionLabel;
+        // ... rest of game over modal translations ...
+    }
 }
 
 
@@ -650,14 +733,22 @@ function newGame() {
     
     // Generate the keyboard
     generateKeyboard();
+
+    // Update UI based on mode
+    updateCountryUI();
     
     console.log('Word:', word); // For debugging
 }
 
 // Get a random word from the current country's list
 function getRandomWord() {
-    const words = WORD_LISTS[currentCountry];
-    return words[Math.floor(Math.random() * words.length)].toUpperCase();
+    if (currentCountry === 'football-players') {
+        const words = WORD_LISTS.jugadores_de_futbol;
+        return words[Math.floor(Math.random() * words.length)].toUpperCase();
+    } else {
+        const words = WORD_LISTS[currentCountry];
+        return words[Math.floor(Math.random() * words.length)].toUpperCase();
+    }
 }
 
 // Generate the on-screen keyboard
@@ -916,7 +1007,7 @@ function gameWon() {
     stats.guessDistribution[guesses.length - 1]++;
     saveStats();
     
-    // Update modal
+    // Use standard messages for all modes
     document.getElementById('game-over-title').textContent = LANGUAGES[currentLanguage].winTitle;
     document.getElementById('game-over-message').innerHTML = 
         `${LANGUAGES[currentLanguage].correctWord} <span id="correct-word">${word}</span>`;
@@ -940,7 +1031,7 @@ function gameLost() {
     stats.currentStreak = 0;
     saveStats();
     
-    // Update modal
+    // Use standard messages for all modes
     document.getElementById('game-over-title').textContent = LANGUAGES[currentLanguage].loseTitle;
     document.getElementById('game-over-message').innerHTML = 
         `${LANGUAGES[currentLanguage].correctWord} <span id="correct-word">${word}</span>`;
@@ -1150,37 +1241,120 @@ function copyToClipboard(text) {
     document.body.removeChild(textarea);
 }
 
+
+// Helper functions
+function getCountryCode(country) {
+  const codes = {
+    'argentina': 'ar',
+    'chile': 'cl',
+    'peru': 'pe',
+    'colombia': 'co',
+    'mexico': 'mx'
+  };
+  return codes[country] || 'ar';
+}
+
+function getCountryName(country) {
+  const names = {
+    'argentina': 'Argentina',
+    'chile': 'Chile',
+    'peru': 'Perú',
+    'colombia': 'Colombia',
+    'mexico': 'México'
+  };
+  return names[country] || 'Argentina';
+}
+
 // Update UI when country changes
 function updateCountryUI() {
-    // Update body class for background color
-    document.body.className = currentCountry;
-    
-    // Update flag in header
-    const flagImg = document.querySelector('.country-flag img');
-    const flagText = document.querySelector('.country-flag span');
-    
-    switch(currentCountry) {
-        case 'argentina':
-            flagImg.src = 'https://flagcdn.com/w40/ar.png';
-            flagText.textContent = 'Argentina';
-            break;
-        case 'chile':
-            flagImg.src = 'https://flagcdn.com/w40/cl.png';
-            flagText.textContent = 'Chile';
-            break;
-        case 'peru':
-            flagImg.src = 'https://flagcdn.com/w40/pe.png';
-            flagText.textContent = 'Perú';
-            break;
-        case 'colombia':
-            flagImg.src = 'https://flagcdn.com/w40/co.png';
-            flagText.textContent = 'Colombia';
-            break;
-        case 'mexico':
-            flagImg.src = 'https://flagcdn.com/w40/mx.png';
-            flagText.textContent = 'México';
-            break;
+    const titleEl = document.querySelector('.title');
+    const subtitleEl = document.querySelector('.subtitle');
+    const flagContainer = document.querySelector('.country-flag');
+    const countrySelector = document.querySelector('.country-selector');
+
+    if (currentCountry === 'football-players') {
+        // Football mode
+        document.body.className = 'football-mode';
+        titleEl.textContent = 'Wordz';
+        subtitleEl.style.display = 'none';
+        
+        // Update flag display
+        flagContainer.innerHTML = `
+            <span class="football-icon">⚽</span>
+            <span>${LANGUAGES[currentLanguage].footballPlayers}</span>
+        `;
+        
+        // Hide country flags but keep container and version button
+        countrySelector.innerHTML = `
+            <div class="other-versions-btn-container">
+                <button id="other-versions-btn" class="other-versions-btn">
+                    ${LANGUAGES[currentLanguage].otherVersions}
+                </button>
+            </div>
+        `;
+        
+    } else {
+        // Classic mode - FULLY restore original elements
+        document.body.className = currentCountry;
+        titleEl.textContent = 'Lexico';
+        subtitleEl.style.display = 'inline';
+        
+        // Restore flag display
+        flagContainer.innerHTML = `
+            <img src="https://flagcdn.com/w40/${getCountryCode(currentCountry)}.png" 
+                 alt="${currentCountry}" 
+                 class="flag-icon">
+            <span>${getCountryName(currentCountry)}</span>
+        `;
+        
+        // FULLY restore country selector with all original elements
+        countrySelector.innerHTML = `
+            <h3>${LANGUAGES[currentLanguage].playOtherCountries}</h3>
+            <div class="flags-container">
+                <div class="flag-option" data-country="argentina">
+                    <img src="https://flagcdn.com/w40/ar.png" alt="Argentina">
+                    <span>Argentina</span>
+                </div>
+                <div class="flag-option" data-country="chile">
+                    <img src="https://flagcdn.com/w40/cl.png" alt="Chile">
+                    <span>Chile</span>
+                </div>
+                <div class="flag-option" data-country="peru">
+                    <img src="https://flagcdn.com/w40/pe.png" alt="Perú">
+                    <span>Perú</span>
+                </div>
+                <div class="flag-option" data-country="colombia">
+                    <img src="https://flagcdn.com/w40/co.png" alt="Colombia">
+                    <span>Colombia</span>
+                </div>
+                <div class="flag-option" data-country="mexico">
+                    <img src="https://flagcdn.com/w40/mx.png" alt="México">
+                    <span>México</span>
+                </div>
+            </div>
+            <div class="other-versions-btn-container">
+                <button id="other-versions-btn" class="other-versions-btn">
+                    ${LANGUAGES[currentLanguage].otherVersions}
+                </button>
+            </div>
+        `;
+        
+        // Reattach flag event listeners
+        document.querySelectorAll('.flag-option').forEach(option => {
+            option.addEventListener('click', () => {
+                currentCountry = option.dataset.country;
+                updateCountryUI();
+                newGame();
+            });
+        });
     }
+
+    // Reattach version button listener
+    document.getElementById('other-versions-btn')?.addEventListener('click', () => {
+        document.getElementById('game-modes-modal').style.display = 'flex';
+    });
+
+    updateFootballDisplayText();
 }
 
 

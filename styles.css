@@ -592,6 +592,11 @@ h1 {
   letter-spacing: 0.2rem;
   margin: 0;
   line-height: 0.9; /* Tighter than 1 */
+
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--black);
+  margin-right: 15px;
 }
 
 .subtitle {
@@ -928,3 +933,89 @@ body.peru {
   align-items: center;
   }
 }
+
+
+body.football-mode {
+  background: url('https://images.unsplash.com/photo-1459865264687-595d652de67e?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Zm9vdGJhbGwlMjBncmFzc3xlbnwwfHwwfHx8MA%3D%3D');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-color: #2a8a2a; /* Fallback color */
+}
+
+.football-icon {
+    font-size: 1.2rem;
+    margin-right: 5px;
+}
+
+/* Adjust the title for football mode */
+.football-mode .title {
+    font-size: 2.5rem;
+    color: black;
+    text-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+
+.football-mode .subtitle {
+    display: none; /* Hide "LATINO" */
+}
+
+body.football-mode .tile {
+    background-color: var(--white);
+    border: 2px solid var(--light-gray);
+}
+
+body.football-mode .tile.correct {
+    background-color: var(--primary-color); /* Green */
+    border-color: var(--primary-color);
+}
+
+body.football-mode .tile.present {
+    background-color: var(--secondary-color); /* Yellow */
+    border-color: var(--secondary-color);
+}
+
+body.football-mode .tile.absent {
+    background-color: var(--dark-gray); /* Gray */
+    border-color: var(--dark-gray);
+}
+
+/* Keep the same keyboard colors too */
+body.football-mode .key {
+    background-color: var(--light-gray);
+    color: var(--black);
+}
+
+body.football-mode .key.correct {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+
+body.football-mode .key.present {
+    background-color: var(--secondary-color);
+    color: var(--white);
+}
+
+body.football-mode .key.absent {
+    background-color: var(--dark-gray);
+    color: var(--white);
+}
+
+.game-mode-option[data-mode="football-players"] {
+    background-color: rgba(26, 107, 26, 0.1);
+    border-left: 4px solid #1a6b1a;
+}
+
+.game-mode-option[data-mode="football-players"]:hover {
+    background-color: rgba(26, 107, 26, 0.2);
+}
+
+body.football-mode .title {
+  content: "Wordz"; /* Forces "Wordz" display */
+}
+
+body.football-mode .subtitle {
+  display: none; /* Hides "LATINO" */
+}
+
+
+
