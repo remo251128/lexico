@@ -247,7 +247,29 @@ chileformer: [
         "guita", "pende", "jodas", "pucho", "pucho", "pucho", "birra", "pucho", "piola", "pucho"
     ],
     jugadores_de_futbol: [
-        "messi", "lewis", "pedri", "kroos", "kante"
+        "kante", "messi", "silva", "gotze", "neves", "klich", "ramos", 
+  "rossi", "pirlo", "pique", "henry", "gomez", "villa", "foden", "totti",
+  "milla", "navas", "keane", "onana", "salah", "alves", "neuer", "fekir",
+  "coman", "allen", "reyna", "jones", "bento", "vidic", "xhaka", "pires",
+  "tadic", "mikel", "lopez", "perez", "toure", "moses", "iwobi",
+  "bravo", "nesta", "puyol", "pinto", "rodri", "keita", "leiva", "jovic",
+  "dzeko", "pogba", "matip", "giggs", "sahin", "dunga", "salas", "smith",
+  "adams", "evans", "keown", "schar", "pulis", "jenas", "klopp",
+  "degea", "felix", "lippi", "suazo", "trapp", "brown", "young", "coady",
+  "arias", "cisse", "abate", "depay", "terry", "mendy", "savic", "rojas",
+  "juric", "blanc", "ekdal", "moura", "ganso", "reina", "clark", "adler",
+  "vidal", "fuchs", "oblak", "kroos", "ayala", "motta", "clyne", "porro",
+  "kalas", "oshea", "pioli", "davis", "baker", "hayes",
+  "sakai", "klose", "banks", "perea", "basso", "funes", "pelle", "costa",
+  "lloyd", "nasri", "owens", "perin", "menez", "cesar", "fonte", "vardy",
+ "barry", "inler", "petit", "chivu", "okaka", "moyes", "gibbs",
+  "diouf", "zenga", "carew", "dinho", 
+ "dante", "lucas", "valon", "alaba", "skrtl", 
+  "honda", "essam", "velez", "toney", "garza", "walsh", "larin",
+  "viana", "osman", "chong", "agger", "zouma", "godoy", "berra",
+  "ruddy", "xisco", "mount", "pedri", "marin", "elano", "lunin", "balde", "rivas",
+  "lemar", "galan", "seidu", "simon", "djalo", "gakpo", "nuñez", "cunha", "dalot",
+  "olise", "pacho", "neves", "jesus", "moore", "walsh", "gusto", "muani"
     ]
 };
 
