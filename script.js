@@ -535,6 +535,9 @@ function setupEventListeners() {
     flagOptions.forEach(option => {
         option.addEventListener('click', () => {
             currentCountry = option.dataset.country;
+
+            window.scrollTo(0, 0);
+
             updateCountryUI();
             newGame();
         });
@@ -569,6 +572,8 @@ function setupGameModeSelection() {
   gameModeOptions.forEach(option => {
     option.addEventListener('click', () => {
       const mode = option.dataset.mode;
+
+      window.scrollTo(0, 0);
       
       if (mode === 'football-players') {
                 currentCountry = 'football-players';
@@ -881,12 +886,13 @@ function submitGuess() {
 
 function submitGuess() {
     if (currentGuess.length < 5) {
-        showMessage(LANGUAGES[currentLanguage].tooShort);
+        //showMessage(LANGUAGES[currentLanguage].tooShort);
+        shakeRow(guesses.length);
         return;
     }
 
     if (!isValidWord(currentGuess)) {
-        showMessage(LANGUAGES[currentLanguage].invalidWord);
+        //showMessage(LANGUAGES[currentLanguage].invalidWord);
         shakeRow(guesses.length);
         return;
     }
@@ -1289,6 +1295,9 @@ function getCountryName(country) {
 
 // Update UI when country changes
 function updateCountryUI() {
+
+    window.scrollTo(0, 0);
+
     const titleEl = document.querySelector('.title');
     const subtitleEl = document.querySelector('.subtitle');
     const flagContainer = document.querySelector('.country-flag');
