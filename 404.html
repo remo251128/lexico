@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <script>
-  // Capture the intended URL before redirecting
-  sessionStorage.setItem('redirect', window.location.pathname);
-  // Redirect to index.html (your main SPA entry point)
-  window.location.replace('/');
+  // 1. Capture intended path
+  const fullPath = window.location.pathname;
+  
+  // 2. Extract repo path (e.g., '/lexico/')
+  const repoPath = fullPath.split('/').slice(0, 2).join('/') + '/';
+  
+  // 3. Redirect to index.html WITH repo path
+  sessionStorage.setItem('redirect', fullPath);
+  window.location.replace(repoPath + 'index.html');
 </script>
