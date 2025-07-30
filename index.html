@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordz</title>
+
+
+
+<meta name="title" content="Wordz - Free 5-letter Word Puzzle - Juego de Palabras gratis">
+<meta name="description" content="Guess the hidden word in this free game with unlimited guesses - Adivina la palabra oculta en este juego gratis">
+
+<!-- Open Graph / Facebook -->
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://wordz.site/">
+<meta property="og:title" content="Wordz - Free 5-letter Word Puzzle - Juego de Palabras gratis">
+<meta property="og:description" content="Guess the hidden word in this free game with unlimited guesses - Adivina la palabra oculta en este juego gratis">
+  <!-- <meta property="og:image" content="https://lexico.lat/preview.jpg">  -->
+
+<!-- Twitter -->
+   
+   <!-- <meta property="twitter:card" content="summary_large_image">  -->
+<meta property="twitter:url" content="https://wordz.site/">
+<meta property="twitter:title" content="Wordz - Free 5-letter Word Puzzle - Juego de Palabras gratis">
+<meta property="twitter:description" content="Guess the hidden word in this free game with unlimited guesses - Adivina la palabra oculta en este juego gratis">
+   <!-- <meta property="twitter:image" content="https://lexico.lat/preview.jpg">  -->
+
+
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Game",
+  "name": {
+    "@language": "es",
+    "@value": "Wordz"
+  },
+  "name": {
+    "@language": "en",
+    "@value": "Wordz"
+  },
+  "description": {
+    "@language": "es",
+    "@value": "Adivina la palabra oculta usando pistas de colores en este juego gratis de múltiples versiones con intentos ilimitados"
+  },
+  "description": {
+    "@language": "en",
+    "@value": "Guess the hidden word using color clues in this free game with multiple, unique versions and unlimited guesses"
+  },
+  "url": "https://wordz.site",
+  "genre": ["Puzzle de palabras", "Word Puzzle"],
+  "keywords": "adivina la palabra, 5-letter game, puzzle de palabras, word guessing game, word puzzle, vocabulary game, guess the word, juego 5 letras",
+  "countryOfOrigin": ["Latinoamérica", "United States"]
+}
+</script>
+
+<!--
+{
+  "@context": "https://schema.org",
+  "@type": "Game",
+  "name": "Lexico LATINO",
+  "description": "Juego interactivo para adivinar palabras usando jerga latinoamericana",
+  "url": "https://lexico.lat",
+  "genre": "Puzzle de palabras",
+  "keywords": "juego de palabras, adivinar palabras, slang latino, jerga latina, juego educativo",
+  "countryOfOrigin": "Latinoamérica",
+  "applicationCategory": "Game"
+}
+-->
+<!--
+<script>
+        sessionStorage.redirect = window.location.pathname;
+        window.location.href = '/';
+    </script>
+
+
+<script>
+  // Only redirect if not already on root
+  if (window.location.pathname !== '/') {
+    sessionStorage.redirect = window.location.pathname;
+    window.location.href = '/';
+  }
+</script>
+-->
+
+<script>
+  // Only redirect if not on root AND not a valid version path
+  const path = window.location.pathname;
+  const validPaths = ['/argentina', '/chile', '/peru', '/colombia', '/mexico', '/football-players'];
+  const isVersionPath = validPaths.some(validPath => path.startsWith(validPath));
+  
+  if (path !== '/' && !isVersionPath) {
+    sessionStorage.redirect = path;
+    window.location.href = '/';
+  }
+</script>
+
+</head>
+<body class="argentina">
+    <div class="container" id="argentina">
+        <header>
+            <div class="header-content">
+                <div class="title-container">
+  <h1 class="title">Lexico</h1>
+  <span class="subtitle">LATINO</span>
+  <!-- Flag and other elements below -->
+<!--
+  <div class="country-flag">
+    
+  </div>
+-->
+</div>
+                <div class="country-flag">
+                    <img src="https://flagcdn.com/w40/ar.png" alt="Argentina" class="flag-icon">
+                    <span>Argentina</span>
+                </div>
+            </div>
+            <div class="stats-icon" id="stats-btn">
+                <i class="fas fa-chart-bar"></i>
+            </div>
+        </header>
+
+        <div class="game-container">
+            <div class="info-bar">
+                <div class="info-icon" id="info-btn">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+
+                <div class="language-toggle">
+    <button class="lang-btn" data-lang="en">
+        <img src="https://flagcdn.com/w20/gb.png" alt="English" class="flag-icon">
+        <span>EN</span>
+    </button>
+    <button class="lang-btn" data-lang="es">
+        <img src="https://flagcdn.com/w20/es.png" alt="Español" class="flag-icon">
+        <span>ES</span>
+    </button>
+</div>
+                <div class="timer">Intentos ilimitados</div>
+            </div>
+            
+            <div class="board" id="board">
+                <!-- Game board will be generated by JS -->
+            </div>
+
+            <div class="keyboard">
+                <!-- Keyboard will be generated by JS -->
+            </div>
+        </div>
+
+        <div class="country-selector">
+            <h3>Juega en otros países:</h3>
+            <div class="flags-container">
+                <div class="flag-option" data-country="argentina">
+                    <img src="https://flagcdn.com/w40/ar.png" alt="Argentina">
+                    <span>Argentina</span>
+                </div>
+                <div class="flag-option" data-country="chile">
+                    <img src="https://flagcdn.com/w40/cl.png" alt="Chile">
+                    <span>Chile</span>
+                </div>
+                <div class="flag-option" data-country="peru">
+                    <img src="https://flagcdn.com/w40/pe.png" alt="Perú">
+                    <span>Perú</span>
+                </div>
+                <div class="flag-option" data-country="colombia">
+                    <img src="https://flagcdn.com/w40/co.png" alt="Colombia">
+                    <span>Colombia</span>
+                </div>
+                <div class="flag-option" data-country="mexico">
+                    <img src="https://flagcdn.com/w40/mx.png" alt="México">
+                    <span>México</span>
+                </div>
+            </div>
+           
+            <div class="other-versions-btn-container">
+    <button id="other-versions-btn" class="other-versions-btn">Prueba nuestras otras versiones del juego</button>
+</div>
+
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div class="modal" id="info-modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Cómo jugar</h2>
+            <div class="instructions">
+                <p>Adivina la palabra oculta en 6 intentos.</p>
+                <p>Cada intento debe ser una palabra válida de 5 letras.</p>
+                <p>Después de cada intento el color de las letras cambia para mostrar qué tan cerca estás de acertar la palabra.</p>
+                
+                <div class="examples">
+                    <h3>Ejemplos</h3>
+                    <div class="example-row">
+                        <div class="tile correct">B</div>
+                        <div class="tile">O</div>
+                        <div class="tile">L</div>
+                        <div class="tile">U</div>
+                        <div class="tile">D</div>
+                    </div>
+                    <p>La letra <strong>B</strong> está en la palabra y en la posición correcta.</p>
+                    
+                    <div class="example-row">
+                        <div class="tile">C</div>
+                        <div class="tile">H</div>
+                        <div class="tile present">A</div>
+                        <div class="tile">L</div>
+                        <div class="tile">E</div>
+                    </div>
+                    <p>La letra <strong>A</strong> está en la palabra pero en la posición incorrecta.</p>
+                    
+                    <div class="example-row">
+                        <div class="tile">P</div>
+                        <div class="tile">E</div>
+                        <div class="tile">R</div>
+                        <div class="tile absent">U</div>
+                        <div class="tile">S</div>
+                    </div>
+                    <p>La letra <strong>U</strong> no está en la palabra.</p>
+                </div>
+                
+                <p class="note-text">¡Puedes jugar tantas veces como quieras! Cada país tiene su propia lista de palabras con jerga local.</p>
+                
+                <div class="monetization-note">
+                    <p><strong>Nota:</strong> Esta versión es gratuita. En el futuro podríamos añadir características premium como estadísticas avanzadas o temas personalizados.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div class="modal" id="stats-modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Estadísticas</h2>
+            <div class="stats-container">
+                <div class="stat-box">
+                    <div class="stat-value" id="games-played">0</div>
+                    <div class="stat-label">Jugadas</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="win-percentage">0%</div>
+                    <div class="stat-label">Victorias</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="current-streak">0</div>
+                    <div class="stat-label">Racha actual</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="max-streak">0</div>
+                    <div class="stat-label">Racha máxima</div>
+                </div>
+            </div>
+            
+            <h3>Distribución de intentos</h3>
+            <div class="guess-distribution">
+                <!-- Will be populated by JS -->
+            </div>
+            
+            <div class="share-btn-container">
+                <button id="share-btn" class="btn share-btn">
+                    <i class="fas fa-share-alt"></i> Compartir
+                </button>
+            </div>
+            
+            <div class="next-word-timer">
+                <p>¡Puedes jugar otra palabra ahora mismo!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+<div class="modal" id="game-over-modal">
+    <div class="modal-content">
+        <h2 id="game-over-title">¡Ganaste!</h2>
+        <p id="game-over-message">La palabra era: <span id="correct-word"></span></p>
+        
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-value" id="game-over-games-played">0</div>
+                <div class="stat-label">Jugadas</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="game-over-win-percentage">0%</div>
+                <div class="stat-label">Victorias</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="game-over-current-streak">0</div>
+                <div class="stat-label">Racha actual</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="game-over-max-streak">0</div>
+                <div class="stat-label">Racha máxima</div>
+            </div>
+        </div>
+        
+        <h3>Distribución de intentos</h3>
+        <div class="guess-distribution" id="game-over-guess-distribution">
+            <!-- Will be populated by JS -->
+        </div>
+        
+        <div class="action-buttons">
+            <button id="play-again-btn" class="btn">Jugar otra</button>
+            <button id="share-result-btn" class="btn share-btn">
+                <i class="fas fa-share-alt"></i> Compartir
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<!-- Game Mode Selection Modal -->
+<div class="modal" id="game-modes-modal">
+  <div class="modal-content game-modes-content">
+    <span class="close-btn">&times;</span>
+    <h2 class="game-modes-title"></h2>
+    
+    <!-- Football Category -->
+    <div class="game-mode-category">
+      <h3 class="category-title" data-category="football"></h3>
+      <div class="game-mode-option" data-mode="football-players">
+        <span class="game-mode-icon">⚽</span>
+        <span class="game-mode-name"></span>
+      </div>
+    </div>
+    
+
+    <!-- Slang Category -->
+    <div class="game-mode-category">
+      <h3 class="category-title" data-category="slang"></h3>
+      <div class="game-mode-option" data-mode="argentina">
+        <img src="https://flagcdn.com/w20/ar.png" class="game-mode-icon" alt="Argentina">
+        <span class="game-mode-name">Jerga Argentina</span>
+      </div>
+      <div class="game-mode-option" data-mode="chile">
+        <img src="https://flagcdn.com/w20/cl.png" class="game-mode-icon" alt="Chile">
+        <span class="game-mode-name">Jerga Chilena</span>
+      </div>
+      <div class="game-mode-option" data-mode="peru">
+        <img src="https://flagcdn.com/w20/pe.png" class="game-mode-icon" alt="Perú">
+        <span class="game-mode-name">Jerga Peruana</span>
+      </div>
+      <div class="game-mode-option" data-mode="colombia">
+        <img src="https://flagcdn.com/w20/co.png" class="game-mode-icon" alt="Colombia">
+        <span class="game-mode-name">Jerga Colombiana</span>
+      </div>
+      <div class="game-mode-option" data-mode="mexico">
+        <img src="https://flagcdn.com/w20/mx.png" class="game-mode-icon" alt="México">
+        <span class="game-mode-name">Jerga Mexicana</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+    <script src="script.js"></script>
+</body>
+</html>
+
+<!--
+//DELete COMMTNS
+//UNRELATED: CONSIDER MAKING ANOTHER SITE OF IQ TESTS (PAID?) MIRROR SITE DE humanbenchmark.com
+
+//compr WORDZ.SITE (o algo asi de general para incl. otras versiones ambos idiomas(futbol, ciencia y mas..)) (TURN OFF AUTO-RENEW)! y advertise (host github first?)
+//AL LANZAR AL PBLCO VER SI ES NECESARIO PONER EL REPO EN PRIVADO (cuenta github es segura?) setar github para no mostrar email (privacy settings)
+//test EVERYTHING RESPOSIVE ON REAL CELL (con distintos tamaños fuentes, dispositivos y s operatvos) constantly ESP: dif from desktop: compartir, animaciones racha
+//contacto (crear mail ddicado para website y adjuntar a la funcionalidad de contacto que este en una pagina separada a la del juego principal) al aplcar adsnse
+//cuando se tenga host, hostear las imgs necesarias para estas etiquetas: <meta property="twitter:image , card y <meta property="og:image" Y DESCOMENTAR LAS ETIQS
+// cuando llegue a un nivel para aplicar a adsnse (aprx 3000 unique vistors mes) implmtnetar estas 4 paginas (oblgatorias): prvacy policy, terms, about y contacto
+//func boton compartir (en estadisticas y al ganar o perder) (crar cuentas social media ifneeeded)
+//tan pronto como se compre el dominio seguir los pasos de dpseekpara implementalo en googl anlitics (incl añadir codigo de manera segura, etc) para trackear stats
+//lo de fallback  404.html o algo mas tendria que ser cambiado si se decide cambiar a alojamiento fuera de github pages?
+
+//hacer esto y luego comrpar site:
+//permtir share en whtsapp, tlegram, facebk y twtter (dpendiendo si dsktop o mbile?) y que todo el texto se ajste a idioma (tmb asgurar que no se comparte nada mio)
+//URL PARA CADA GAME VERSION (Y CADA IDIOMA TAMBIEN???)
+//DECIDIR CUAL SERIA LA GAME VERSION DE LA PAGINA DE INCIO Y idioma default (ver que pagina e idioma sale cuando se )
+
+//make new versions in minutes from now on 
+//wrdlees personalizados por influencer (legal?), youtuber (y mandarle el link a c uno?)!
+//mas importancia a listas de palabras ver que todo este bien
+
+-->
