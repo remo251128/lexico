@@ -1,5 +1,16 @@
 <!DOCTYPE html>
 <script>
+  // 1. Get the full path (e.g., '/lexico/argentina')
+  const path = window.location.pathname;
+  
+  // 2. Redirect to index.html WITH repository path
+  sessionStorage.setItem('redirect', path);
+  window.location.replace('/lexico/index.html');
+</script>
+
+<!---
+<!DOCTYPE html>
+<script>
   // 1. Capture intended path
   const fullPath = window.location.pathname;
   
@@ -10,3 +21,5 @@
   sessionStorage.setItem('redirect', fullPath);
   window.location.replace(repoPath + 'index.html');
 </script>
+
+-->
