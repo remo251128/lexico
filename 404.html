@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <script>
-  // Get the path (e.g., '/mexico/es')
   const path = window.location.pathname;
-
-  // Save it so index.html can read and reroute
   sessionStorage.setItem('redirect', path);
 
-  // Redirect RELATIVE to current repo
-  const repo = window.location.pathname.split('/')[1]; 
-  window.location.replace(`/${repo}/index.html`);
+  // Use current origin + repo folder (automatically correct)
+  const base = window.location.origin;
+  const repo = window.location.pathname.split('/')[1];
+  window.location.replace(`${base}/${repo}/index.html`);
 </script>
 
 <!--
