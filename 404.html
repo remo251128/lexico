@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <script>
-  // 1. Get the full path (e.g., '/lexico/argentina')
+  // Get the path (e.g., '/mexico/es')
   const path = window.location.pathname;
-  
-  // 2. Redirect to index.html WITH repository path
+
+  // Save it so index.html can read and reroute
   sessionStorage.setItem('redirect', path);
-  window.location.replace('/lexico/index.html');
+
+  // Redirect RELATIVE to current repo
+  const repo = window.location.pathname.split('/')[1]; 
+  window.location.replace(`/${repo}/index.html`);
 </script>
 
 <!--
