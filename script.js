@@ -5023,8 +5023,7 @@ chileformer: [
 
 const VERSION_CONFIG = {
     
-    // Football version (keep exactly as in your original code)
-    'footballteams': {
+    'footballteams': { //  EL NOMBRE DE ESTE OBJETO SE USA PARA EL URL! --- NO USAR URLS YA USADAS EN VRSIONES VIEJAS O NUEVAS Y NO USAR CARCTERES ESPECIALES --- 
         title: { es: "Equipos de Fútbol", en: "Football Teams" },
         icon: "👟",
         background: "url('https://www.placesleisure.org/media/nnzmyc1b/two-column-football-3g-pitch.jpg?width=800&height=572&v=1da0da618d315b0')",
@@ -5034,7 +5033,7 @@ const VERSION_CONFIG = {
         },
         category: { es: "Fútbol", en: "Football/Soccer" }
     },
-    'malenames': {
+    'malenames': { //  EL NOMBRE DE ESTE OBJETO SE USA PARA EL URL! --- NO USAR URLS YA USADAS EN VRSIONES VIEJAS O NUEVAS Y NO USAR CARCTERES ESPECIALES --- 
         title: { es: "Nombres de Hombre (Inglés)", en: "Male Names" },
         icon: "👦",
         background: "url('https://slidescorner.com/wp-content/uploads/2023/12/Light-Blue-Background-Science-Medical-with-Gradient-and-Wavy-Lines-by-SlidesCorner.com_-1024x576.jpg.webp')",
@@ -5044,7 +5043,7 @@ const VERSION_CONFIG = {
         },
         category: { es: "Nombres", en: "Names" }
     },
-    'femalenames': {
+    'femalenames': { //  EL NOMBRE DE ESTE OBJETO SE USA PARA EL URL! --- NO USAR URLS YA USADAS EN VRSIONES VIEJAS O NUEVAS Y NO USAR CARCTERES ESPECIALES ---  
         title: { es: "Nombres de Mujer (Inglés)", en: "Female Names" },
         icon: "👧",
         background: "url('https://files.123freevectors.com/wp-content/original/156204-abstract-light-pink-background.jpg')",
@@ -5054,7 +5053,7 @@ const VERSION_CONFIG = {
         },
         category: { es: "Nombres", en: "Names" }
     },
-    'malenamesesp': {
+    'malenamesesp': { //  EL NOMBRE DE ESTE OBJETO SE USA PARA EL URL! --- NO USAR URLS YA USADAS EN VRSIONES VIEJAS O NUEVAS Y NO USAR CARCTERES ESPECIALES --- 
         title: { es: "Nombres de Hombre", en: "Male Names (Spanish)" },
         icon: "👦🏻",
         background: "url('https://slidescorner.com/wp-content/uploads/2023/12/Light-Blue-Background-Science-Medical-with-Gradient-and-Wavy-Lines-by-SlidesCorner.com_-1024x576.jpg.webp')",
@@ -5064,7 +5063,7 @@ const VERSION_CONFIG = {
         },
         category: { es: "Nombres", en: "Names" }
     },
-    'femalenamesesp': {
+    'femalenamesesp': { //  EL NOMBRE DE ESTE OBJETO SE USA PARA EL URL! --- NO USAR URLS YA USADAS EN VRSIONES VIEJAS O NUEVAS Y NO USAR CARCTERES ESPECIALES --- 
         title: { es: "Nombres de Mujer", en: "Female Names (Spanish)" },
         icon: "👩🏻",
         background: "url('https://files.123freevectors.com/wp-content/original/156204-abstract-light-pink-background.jpg')",
@@ -5081,53 +5080,80 @@ const VERSION_CONFIG = {
 
 
 function handleUrlRouting() {
-    // Check for redirect from initial load
-    if (sessionStorage.redirect) {
-        const path = sessionStorage.redirect;
+    // Get the current path from the browser's address bar (this works for both initial load and popstate)
+    const path = window.location.pathname; // e.g., "/footballteams/en"
+    
+    // Split the path into parts and filter out empty strings
+    const parts = path.split('/').filter(p => p);
+    
+    // Process the path parts to determine mode and language
+    let versionPath, lang;
+    
+    if (parts.length >= 2) {
+        // Path is like /version/lang
+        versionPath = parts[0];
+        lang = parts[1];
+    } else if (parts.length === 1) {
+        // Path is just /version (default to a language)
+        versionPath = parts[0];
+        lang = 'es'; // Default language
+    } else {
+        // Path is just / (root), default to Argentina Spanish
+        currentCountry = 'argentina';
+        currentLanguage = 'es';
+        updateCountryUI();
+        updateLanguage();
+        newGame();
         sessionStorage.removeItem('redirect');
-        
-        // Process the path (e.g., "/football/en" -> ["", "football", "en"])
-        const parts = path.split('/').filter(p => p);
-        
-        // Validate and handle the path
-        if (parts.length >= 1) {
-            const versionPath = parts[0];
-            const lang = parts[1] || 'es'; // Default to Spanish
-            
-            // Set version if valid
-            const versionEntry = Object.entries(VERSION_CONFIG).find(
-                ([_, config]) => config.urlPath === versionPath
-            );
-            
-            if (versionEntry) {
-                const [versionId, config] = versionEntry;
-                currentCountry = versionId;
-                applyVersionStyles(config);
-            } 
-            // Handle original football version
-            else if (versionPath === 'football-players') {
-                currentCountry = 'football-players';
-                updateCountryUI();
-            }
-            // Handle country versions (argentina, chile, etc.)
-            else if (['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(versionPath)) {
-                currentCountry = versionPath;
-                updateCountryUI();
-            }
-            
-            // Set language if valid
-            if (LANGUAGES[lang]) {
-                currentLanguage = lang;
-                updateLanguage();
-            }
-            
-            // Update URL without reloading
-            window.history.replaceState({}, '', path);
+        return; // Exit early for root path
+    }
+    
+    // 1. Set Language if valid
+    if (LANGUAGES[lang]) {
+        currentLanguage = lang;
+        updateLanguage();
+    }
+    
+    // 2. Find and Set the Game Version
+    let versionFound = false;
+    
+    // Check VERSION_CONFIG first (new system)
+    for (const [versionId, config] of Object.entries(VERSION_CONFIG)) {
+        // Check if the path matches either the custom urlPath or the versionId
+        const configPath = config.urlPath || versionId;
+        if (versionPath === configPath) {
+            currentCountry = versionId;
+            applyVersionStyles(config);
+            versionFound = true;
+            break;
         }
     }
     
-    // Initialize game (whether from URL or default)
+    // If not found in VERSION_CONFIG, check special football mode
+    if (!versionFound && versionPath === 'football-players') {
+        currentCountry = 'football-players';
+        updateCountryUI();
+        versionFound = true;
+    }
+    
+    // If still not found, check old country system
+    if (!versionFound && ['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(versionPath)) {
+        currentCountry = versionPath;
+        updateCountryUI();
+        versionFound = true;
+    }
+    
+    // 3. If no version was found from the path, default to Argentina
+    if (!versionFound) {
+        currentCountry = 'argentina';
+        updateCountryUI();
+    }
+    
+    // 4. Start a New Game with the new settings
     newGame();
+    
+    // 5. Clear the sessionStorage redirect now that we've handled it via the URL
+    sessionStorage.removeItem('redirect');
 }
 
 
@@ -5481,17 +5507,17 @@ function generateShareText() {
 function init() {
     loadStats();
     setupEventListeners();
-    handleUrlRouting(); // Changed from newGame() to handle URL routing first
-    
-
-    // Initialize URL after a slight delay to ensure everything is ready
-    setTimeout(() => {
-        updateUrl();
-        newGame();
-    }, 50);
-    
     updateGameModesModal();
     setupGameModeSelection();
+    
+    // Handle the initial URL the page was loaded with
+    handleUrlRouting();
+    
+    // Initialize URL after a slight delay to ensure everything is ready
+    // This ensures the URL bar reflects the initial state
+    setTimeout(() => {
+        updateUrl();
+    }, 50);
 }
 
 // Set up event listeners
@@ -5581,27 +5607,30 @@ function updateUrl() {
 function updateUrl() {
     let path;
     
-    // 1. Handle VERSION_CONFIG modes (new system)
+    // Handle VERSION_CONFIG modes (new system)
     if (VERSION_CONFIG[currentCountry]) {
-        const versionPath = VERSION_CONFIG[currentCountry].urlPath || currentCountry;
+        const config = VERSION_CONFIG[currentCountry];
+        const versionPath = config.urlPath || currentCountry;
         path = `/${versionPath}/${currentLanguage}`;
     }
-    // 2. Handle football players mode
+    // Handle football players mode
     else if (currentCountry === 'football-players') {
         path = `/football-players/${currentLanguage}`;
     }
-    // 3. Handle country modes (original system)
+    // Handle country modes (original system)
     else {
         path = `/${currentCountry}/${currentLanguage}`;
     }
     
-    // Special case for default version
-    if (currentCountry === 'argentina' && window.location.pathname === '/') {
-        path = `/argentina/${currentLanguage}`;
-    }
+    // Special case for default version to keep root URL clean if desired
+    // if (currentCountry === 'argentina' && currentLanguage === 'es' && window.location.pathname === '/') {
+    //     // Already at root, no need to update URL
+    //     return;
+    // }
     
-    // Only update if different from current URL
+    // Only update if different from current URL to avoid redundant history entries
     if (window.location.pathname !== path) {
+        // Use pushState to change the URL and add an entry to the history stack
         window.history.pushState({}, '', path);
     }
 }
