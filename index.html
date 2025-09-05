@@ -101,6 +101,43 @@
   }
 </script>
 
+
+<!---
+
+- .nojekyll
+
+- 404.html CODIGO:
+
+<!DOCTYPE html>
+<script>
+  // 1. Get the full path (e.g., '/lexico/argentina')
+  const path = window.location.pathname;
+  
+  // 2. Redirect to index.html WITH repository path
+  sessionStorage.setItem('redirect', path);
+  window.location.replace('/lexico/index.html');
+</script>
+
+
+EN COMENTARIO: 
+
+<!DOCTYPE html>
+<script>
+  // 1. Capture intended path
+  const fullPath = window.location.pathname;
+  
+  // 2. Extract repo path (e.g., '/lexico/')
+  const repoPath = fullPath.split('/').slice(0, 2).join('/') + '/';
+  
+  // 3. Redirect to index.html WITH repo path
+  sessionStorage.setItem('redirect', fullPath);
+  window.location.replace(repoPath + 'index.html');
+</script>
+
+-->
+
+
+
 </head>
 <body class="argentina">
     <div class="container" id="argentina">
@@ -378,7 +415,7 @@
 //tan pronto como se compre el dominio seguir los pasos de dpseekpara implementalo en googl anlitics (incl añadir codigo de manera segura, etc) para trackear stats
 //wrdlees personalizados por influencer (legal?), youtuber (y mandarle el link a c uno?), cosas similares
 //DECIDIR CUAL SERIA LA GAME VERSION DE LA PAGINA DE INCIO Y idioma default
-//lo de fallback  404.html y .nojekyll o algo mas tendria que ser cambiado si se decide cambiar a alojamiento fuera de github pages?
+//lo de fallback  404.html y .nojekyll o algo mas tendria que ser cambiado si se decide cambiar a alojamiento fuera de github pages? (codigo de 404 ahora en index)
 
 //Ni bien se deploye a namecheap (usar .htaccess) o equivalente:
 //Check que se abra bn la pag con todos los ultimos cambios y esp los que faltban probar: refresh url, re-enter url, enter url de frente, back y next del y al juego
