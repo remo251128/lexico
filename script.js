@@ -5080,132 +5080,80 @@ const VERSION_CONFIG = {
 
 
 function handleUrlRouting() {
-    try {
-        console.log("🔄 handleUrlRouting() started for path:", window.location.pathname);
-        
-        const path = window.location.pathname;
-        const parts = path.split('/').filter(p => p);
-        let versionPath, lang;
-
-        if (parts.length >= 2) {
-            versionPath = parts[0];
-            lang = parts[1];
-            console.log("📋 Parsed versionPath:", versionPath, "lang:", lang);
-        } else if (parts.length === 1) {
-            versionPath = parts[0];
-            lang = 'es';
-            console.log("📋 Single part - versionPath:", versionPath, "default lang: es");
-        } else {
-            console.log("📋 Root path - defaulting to argentina/es");
-            currentCountry = 'argentina';
-            currentLanguage = 'es';
-            updateCountryUI();
-            updateLanguage();
-            setTimeout(() => {
-                try {
-                    newGame();
-                } catch (gameError) {
-                    console.error("❌ Error in newGame() for root path:", gameError);
-                }
-                sessionStorage.removeItem('redirect');
-            }, 100);
-            return;
-        }
-
-        // Set language if valid
-        if (LANGUAGES[lang]) {
-            currentLanguage = lang;
-            console.log("🗣️ Setting language to:", currentLanguage);
-            updateLanguage();
-        } else {
-            console.log("⚠️ Language not found in LANGUAGES, keeping:", currentLanguage);
-        }
-
-        // Find and set the game version
-        let versionFound = false;
-
-        // Check VERSION_CONFIG first (new system)
-        for (const [versionId, config] of Object.entries(VERSION_CONFIG)) {
-            const configPath = config.urlPath || versionId;
-            if (versionPath === configPath) {
-                currentCountry = versionId;
-                console.log("✅ Found in VERSION_CONFIG:", currentCountry);
-                applyVersionStyles(config);
-                updateCountryUI();
-                versionFound = true;
-                break;
-            }
-        }
-
-        // If not found in VERSION_CONFIG, check special football mode
-        if (!versionFound && versionPath === 'football-players') {
-            currentCountry = 'football-players';
-            console.log("✅ Found football-players mode");
-            updateCountryUI();
-            versionFound = true;
-        }
-
-        // If still not found, check old country system
-        if (!versionFound && ['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(versionPath)) {
-            currentCountry = versionPath;
-            console.log("✅ Found in old country system:", currentCountry);
-            updateCountryUI();
-            versionFound = true;
-        }
-
-        // If no version was found from the path, default to Argentina
-        if (!versionFound) {
-            currentCountry = 'argentina';
-            console.log("⚠️ Version not found, defaulting to argentina");
-            updateCountryUI();
-        }
-
-        console.log("🎯 Final settings - country:", currentCountry, "language:", currentLanguage);
-
-        // Start the game with error handling
-        setTimeout(() => {
-            try {
-                console.log("🎮 Calling newGame()");
-                newGame();
-                console.log("✅ newGame() completed successfully");
-            } catch (gameError) {
-                console.error("❌ CRITICAL ERROR in newGame():", gameError);
-                // Emergency fallback: try to render board manually
-                try {
-                    console.log("🆘 Attempting emergency board render");
-                    renderEmptyBoard();
-                } catch (renderError) {
-                    console.error("❌ EMERGENCY RENDER FAILED:", renderError);
-                }
-            }
-            sessionStorage.removeItem('redirect');
-        }, 100);
-
-    } catch (error) {
-        console.error("💥 FATAL ERROR in handleUrlRouting:", error);
-    }
-}
-
-// Emergency fallback function
-function renderEmptyBoard() {
-    const board = document.getElementById('board');
-    if (!board) {
-        console.error("❌ Board element not found!");
-        return;
+    // Get the current path from the browser's address bar (this works for both initial load and popstate)
+    const path = window.location.pathname; // e.g., "/footballteams/en"
+    
+    // Split the path into parts and filter out empty strings
+    const parts = path.split('/').filter(p => p);
+    
+    // Process the path parts to determine mode and language
+    let versionPath, lang;
+    
+    if (parts.length >= 2) {
+        // Path is like /version/lang
+        versionPath = parts[0];
+        lang = parts[1];
+    } else if (parts.length === 1) {
+        // Path is just /version (default to a language)
+        versionPath = parts[0];
+        lang = 'es'; // Default language
+    } else {
+        // Path is just / (root), default to Argentina Spanish
+        currentCountry = 'argentina';
+        currentLanguage = 'es';
+        updateCountryUI();
+        updateLanguage();
+        newGame();
+        sessionStorage.removeItem('redirect');
+        return; // Exit early for root path
     }
     
-    board.innerHTML = '';
-    for (let i = 0; i < 6; i++) {
-        const row = document.createElement('div');
-        row.className = 'row';
-        for (let j = 0; j < 5; j++) {
-            const tile = document.createElement('div');
-            tile.className = 'tile';
-            row.appendChild(tile);
-        }
-        board.appendChild(row);
+    // 1. Set Language if valid
+    if (LANGUAGES[lang]) {
+        currentLanguage = lang;
+        updateLanguage();
     }
-    console.log("🆘 Emergency board rendered");
+    
+    // 2. Find and Set the Game Version
+    let versionFound = false;
+    
+    // Check VERSION_CONFIG first (new system)
+    for (const [versionId, config] of Object.entries(VERSION_CONFIG)) {
+        // Check if the path matches either the custom urlPath or the versionId
+        const configPath = config.urlPath || versionId;
+        if (versionPath === configPath) {
+            currentCountry = versionId;
+            applyVersionStyles(config);
+            versionFound = true;
+            break;
+        }
+    }
+    
+    // If not found in VERSION_CONFIG, check special football mode
+    if (!versionFound && versionPath === 'football-players') {
+        currentCountry = 'football-players';
+        updateCountryUI();
+        versionFound = true;
+    }
+    
+    // If still not found, check old country system
+    if (!versionFound && ['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(versionPath)) {
+        currentCountry = versionPath;
+        updateCountryUI();
+        versionFound = true;
+    }
+    
+    // 3. If no version was found from the path, default to Argentina
+    if (!versionFound) {
+        currentCountry = 'argentina';
+        updateCountryUI();
+    }
+    
+    // 4. Start a New Game with the new settings
+    newGame();
+    
+    // 5. Clear the sessionStorage redirect now that we've handled it via the URL
+    sessionStorage.removeItem('redirect');
 }
 
 
@@ -5557,20 +5505,6 @@ function generateShareText() {
     */
 
 function init() {
-    // Wait for the entire DOM to be fully loaded before running any game logic
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeGame();
-        });
-    } else {
-        // DOM is already ready, run immediately
-        initializeGame();
-    }
-}
-
-// New function: All game initialization logic goes here
-function initializeGame() {
-    console.log("🏁 DOM fully loaded, initializing game");
     loadStats();
     setupEventListeners();
     updateGameModesModal();
@@ -5580,6 +5514,7 @@ function initializeGame() {
     handleUrlRouting();
     
     // Initialize URL after a slight delay to ensure everything is ready
+    // This ensures the URL bar reflects the initial state
     setTimeout(() => {
         updateUrl();
     }, 50);
