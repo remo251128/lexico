@@ -4877,7 +4877,7 @@ chileformer: [
         "guita", "pende", "jodas", "pucho", "pucho", "pucho", "birra", "pucho", "piola", "pucho"
     ],
     jugadores_de_futbol: [
-        "kante", "messi", "silva", "gotze", "neves", "klich", "ramos", 
+        "kante", "messi", "silva", "gotze", "klich", "ramos", 
   "rossi", "pirlo", "pique", "henry", "gomez", "villa", "foden", "totti",
   "milla", "navas", "keane", "onana", "salah", "alves", "neuer", "fekir",
   "coman", "allen", "reyna", "jones", "bento", "vidic", "xhaka", "pires",
@@ -4893,7 +4893,7 @@ chileformer: [
   "sakai", "klose", "banks", "perea", "basso", "funes", "pelle", "costa",
   "lloyd", "nasri", "owens", "perin", "menez", "cesar", "fonte", "vardy",
  "barry", "inler", "petit", "chivu", "okaka", "moyes", "gibbs",
-  "diouf", "zenga", "carew", "dinho", 
+  "diouf", "zenga", "carew", "dinho", "neres",
  "dante", "lucas", "valon", "alaba", "skrtl", 
   "honda", "essam", "velez", "toney", "garza", "walsh", "larin",
   "viana", "osman", "chong", "agger", "zouma", "godoy", "berra",
