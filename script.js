@@ -5504,6 +5504,20 @@ function generateShareText() {
     */
 
 function init() {
+    // Wait for the entire DOM to be fully loaded before running any game logic
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeGame();
+        });
+    } else {
+        // DOM is already ready, run immediately
+        initializeGame();
+    }
+}
+
+// New function: All game initialization logic goes here
+function initializeGame() {
+    console.log("🏁 DOM fully loaded, initializing game");
     loadStats();
     setupEventListeners();
     updateGameModesModal();
@@ -5513,7 +5527,6 @@ function init() {
     handleUrlRouting();
     
     // Initialize URL after a slight delay to ensure everything is ready
-    // This ensures the URL bar reflects the initial state
     setTimeout(() => {
         updateUrl();
     }, 50);
