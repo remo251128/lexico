@@ -5098,7 +5098,6 @@ function handleUrlRouting() {
         currentLanguage = 'es';
         updateCountryUI();
         updateLanguage();
-        // Small delay to ensure UI updates before new game
         setTimeout(() => {
             newGame();
             sessionStorage.removeItem('redirect');
@@ -5115,32 +5114,34 @@ function handleUrlRouting() {
     // Find and set the game version
     let versionFound = false;
 
-    // Check VERSION_CONFIG first
+    // Check VERSION_CONFIG first (new system)
     for (const [versionId, config] of Object.entries(VERSION_CONFIG)) {
         const configPath = config.urlPath || versionId;
         if (versionPath === configPath) {
             currentCountry = versionId;
             applyVersionStyles(config);
+            // FIX: Also update the country UI for consistency
+            updateCountryUI(); // <-- THIS WAS MISSING
             versionFound = true;
             break;
         }
     }
 
-    // Check special football mode
+    // If not found in VERSION_CONFIG, check special football mode
     if (!versionFound && versionPath === 'football-players') {
         currentCountry = 'football-players';
         updateCountryUI();
         versionFound = true;
     }
 
-    // Check old country system
+    // If still not found, check old country system
     if (!versionFound && ['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(versionPath)) {
         currentCountry = versionPath;
         updateCountryUI();
         versionFound = true;
     }
 
-    // Default to Argentina if no version found
+    // If no version was found from the path, default to Argentina
     if (!versionFound) {
         currentCountry = 'argentina';
         updateCountryUI();
