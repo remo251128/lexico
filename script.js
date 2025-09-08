@@ -5080,46 +5080,43 @@ const VERSION_CONFIG = {
 
 
 function handleUrlRouting() {
-    // Get the current path from the browser's address bar (this works for both initial load and popstate)
-    const path = window.location.pathname; // e.g., "/footballteams/en"
+    console.log("🔄 Handling URL Routing for:", window.location.pathname);
     
-    // Split the path into parts and filter out empty strings
+    const path = window.location.pathname;
     const parts = path.split('/').filter(p => p);
-    
-    // Process the path parts to determine mode and language
     let versionPath, lang;
-    
+
     if (parts.length >= 2) {
-        // Path is like /version/lang
         versionPath = parts[0];
         lang = parts[1];
     } else if (parts.length === 1) {
-        // Path is just /version (default to a language)
         versionPath = parts[0];
-        lang = 'es'; // Default language
+        lang = 'es';
     } else {
-        // Path is just / (root), default to Argentina Spanish
+        // Default to Argentina Spanish for root path
         currentCountry = 'argentina';
         currentLanguage = 'es';
         updateCountryUI();
         updateLanguage();
-        newGame();
-        sessionStorage.removeItem('redirect');
-        return; // Exit early for root path
+        // Small delay to ensure UI updates before new game
+        setTimeout(() => {
+            newGame();
+            sessionStorage.removeItem('redirect');
+        }, 100);
+        return;
     }
-    
-    // 1. Set Language if valid
+
+    // Set language if valid
     if (LANGUAGES[lang]) {
         currentLanguage = lang;
         updateLanguage();
     }
-    
-    // 2. Find and Set the Game Version
+
+    // Find and set the game version
     let versionFound = false;
-    
-    // Check VERSION_CONFIG first (new system)
+
+    // Check VERSION_CONFIG first
     for (const [versionId, config] of Object.entries(VERSION_CONFIG)) {
-        // Check if the path matches either the custom urlPath or the versionId
         const configPath = config.urlPath || versionId;
         if (versionPath === configPath) {
             currentCountry = versionId;
@@ -5128,32 +5125,33 @@ function handleUrlRouting() {
             break;
         }
     }
-    
-    // If not found in VERSION_CONFIG, check special football mode
+
+    // Check special football mode
     if (!versionFound && versionPath === 'football-players') {
         currentCountry = 'football-players';
         updateCountryUI();
         versionFound = true;
     }
-    
-    // If still not found, check old country system
+
+    // Check old country system
     if (!versionFound && ['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(versionPath)) {
         currentCountry = versionPath;
         updateCountryUI();
         versionFound = true;
     }
-    
-    // 3. If no version was found from the path, default to Argentina
+
+    // Default to Argentina if no version found
     if (!versionFound) {
         currentCountry = 'argentina';
         updateCountryUI();
     }
-    
-    // 4. Start a New Game with the new settings
-    newGame();
-    
-    // 5. Clear the sessionStorage redirect now that we've handled it via the URL
-    sessionStorage.removeItem('redirect');
+
+    // Small delay to ensure all UI updates complete before starting new game
+    setTimeout(() => {
+        console.log("🎮 Starting new game for:", currentCountry, "in", currentLanguage);
+        newGame();
+        sessionStorage.removeItem('redirect');
+    }, 100);
 }
 
 
@@ -5507,12 +5505,11 @@ function generateShareText() {
 function init() {
     loadStats();
     setupEventListeners();
-    handleUrlRouting();
     updateGameModesModal();
     setupGameModeSelection();
     
     // Handle the initial URL the page was loaded with
-    
+    handleUrlRouting();
     
     // Initialize URL after a slight delay to ensure everything is ready
     // This ensures the URL bar reflects the initial state
