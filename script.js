@@ -5080,79 +5080,132 @@ const VERSION_CONFIG = {
 
 
 function handleUrlRouting() {
-    console.log("🔄 Handling URL Routing for:", window.location.pathname);
-    
-    const path = window.location.pathname;
-    const parts = path.split('/').filter(p => p);
-    let versionPath, lang;
+    try {
+        console.log("🔄 handleUrlRouting() started for path:", window.location.pathname);
+        
+        const path = window.location.pathname;
+        const parts = path.split('/').filter(p => p);
+        let versionPath, lang;
 
-    if (parts.length >= 2) {
-        versionPath = parts[0];
-        lang = parts[1];
-    } else if (parts.length === 1) {
-        versionPath = parts[0];
-        lang = 'es';
-    } else {
-        // Default to Argentina Spanish for root path
-        currentCountry = 'argentina';
-        currentLanguage = 'es';
-        updateCountryUI();
-        updateLanguage();
+        if (parts.length >= 2) {
+            versionPath = parts[0];
+            lang = parts[1];
+            console.log("📋 Parsed versionPath:", versionPath, "lang:", lang);
+        } else if (parts.length === 1) {
+            versionPath = parts[0];
+            lang = 'es';
+            console.log("📋 Single part - versionPath:", versionPath, "default lang: es");
+        } else {
+            console.log("📋 Root path - defaulting to argentina/es");
+            currentCountry = 'argentina';
+            currentLanguage = 'es';
+            updateCountryUI();
+            updateLanguage();
+            setTimeout(() => {
+                try {
+                    newGame();
+                } catch (gameError) {
+                    console.error("❌ Error in newGame() for root path:", gameError);
+                }
+                sessionStorage.removeItem('redirect');
+            }, 100);
+            return;
+        }
+
+        // Set language if valid
+        if (LANGUAGES[lang]) {
+            currentLanguage = lang;
+            console.log("🗣️ Setting language to:", currentLanguage);
+            updateLanguage();
+        } else {
+            console.log("⚠️ Language not found in LANGUAGES, keeping:", currentLanguage);
+        }
+
+        // Find and set the game version
+        let versionFound = false;
+
+        // Check VERSION_CONFIG first (new system)
+        for (const [versionId, config] of Object.entries(VERSION_CONFIG)) {
+            const configPath = config.urlPath || versionId;
+            if (versionPath === configPath) {
+                currentCountry = versionId;
+                console.log("✅ Found in VERSION_CONFIG:", currentCountry);
+                applyVersionStyles(config);
+                updateCountryUI();
+                versionFound = true;
+                break;
+            }
+        }
+
+        // If not found in VERSION_CONFIG, check special football mode
+        if (!versionFound && versionPath === 'football-players') {
+            currentCountry = 'football-players';
+            console.log("✅ Found football-players mode");
+            updateCountryUI();
+            versionFound = true;
+        }
+
+        // If still not found, check old country system
+        if (!versionFound && ['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(versionPath)) {
+            currentCountry = versionPath;
+            console.log("✅ Found in old country system:", currentCountry);
+            updateCountryUI();
+            versionFound = true;
+        }
+
+        // If no version was found from the path, default to Argentina
+        if (!versionFound) {
+            currentCountry = 'argentina';
+            console.log("⚠️ Version not found, defaulting to argentina");
+            updateCountryUI();
+        }
+
+        console.log("🎯 Final settings - country:", currentCountry, "language:", currentLanguage);
+
+        // Start the game with error handling
         setTimeout(() => {
-            newGame();
+            try {
+                console.log("🎮 Calling newGame()");
+                newGame();
+                console.log("✅ newGame() completed successfully");
+            } catch (gameError) {
+                console.error("❌ CRITICAL ERROR in newGame():", gameError);
+                // Emergency fallback: try to render board manually
+                try {
+                    console.log("🆘 Attempting emergency board render");
+                    renderEmptyBoard();
+                } catch (renderError) {
+                    console.error("❌ EMERGENCY RENDER FAILED:", renderError);
+                }
+            }
             sessionStorage.removeItem('redirect');
         }, 100);
+
+    } catch (error) {
+        console.error("💥 FATAL ERROR in handleUrlRouting:", error);
+    }
+}
+
+// Emergency fallback function
+function renderEmptyBoard() {
+    const board = document.getElementById('board');
+    if (!board) {
+        console.error("❌ Board element not found!");
         return;
     }
-
-    // Set language if valid
-    if (LANGUAGES[lang]) {
-        currentLanguage = lang;
-        updateLanguage();
-    }
-
-    // Find and set the game version
-    let versionFound = false;
-
-    // Check VERSION_CONFIG first (new system)
-    for (const [versionId, config] of Object.entries(VERSION_CONFIG)) {
-        const configPath = config.urlPath || versionId;
-        if (versionPath === configPath) {
-            currentCountry = versionId;
-            applyVersionStyles(config);
-            // FIX: Also update the country UI for consistency
-            updateCountryUI(); // <-- THIS WAS MISSING
-            versionFound = true;
-            break;
+    
+    board.innerHTML = '';
+    for (let i = 0; i < 6; i++) {
+        const row = document.createElement('div');
+        row.className = 'row';
+        for (let j = 0; j < 5; j++) {
+            const tile = document.createElement('div');
+            tile.className = 'tile';
+            row.appendChild(tile);
         }
+        board.appendChild(row);
     }
-
-    // If not found in VERSION_CONFIG, check special football mode
-    if (!versionFound && versionPath === 'football-players') {
-        currentCountry = 'football-players';
-        updateCountryUI();
-        versionFound = true;
-    }
-
-    // If still not found, check old country system
-    if (!versionFound && ['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(versionPath)) {
-        currentCountry = versionPath;
-        updateCountryUI();
-        versionFound = true;
-    }
-
-    // If no version was found from the path, default to Argentina
-    if (!versionFound) {
-        currentCountry = 'argentina';
-        updateCountryUI();
-    }
-
-    // Small delay to ensure all UI updates complete before starting new game
-    setTimeout(() => {
-        console.log("🎮 Starting new game for:", currentCountry, "in", currentLanguage);
-        newGame();
-        sessionStorage.removeItem('redirect');
-    }, 100);
+    console.log("🆘 Emergency board rendered");
 }
 
 
