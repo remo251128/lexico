@@ -5507,11 +5507,12 @@ function generateShareText() {
 function init() {
     loadStats();
     setupEventListeners();
+    handleUrlRouting();
     updateGameModesModal();
     setupGameModeSelection();
     
     // Handle the initial URL the page was loaded with
-    handleUrlRouting();
+    
     
     // Initialize URL after a slight delay to ensure everything is ready
     // This ensures the URL bar reflects the initial state
