@@ -4962,13 +4962,13 @@ chileformer: [
 
     ],
     nombres_hombre_espanol: [
-        "aaron","adrian", "aitor", "alejo", "alain", "angel", "ariel", "asier", "anton",
+        "aaron", "aitor", "alejo", "alain", "angel", "ariel", "asier", "anton",
    "carlo", "casto", "cesar", "dacio", "dario", "david", "diego", "dante",
-  "edgar",  "elian", "elias", "elvis", "emilo", "ender",
+  "edgar",  "elian", "elias", "elvis",
   "enric", "erick",   "fabio", "fidel",
   "felix",    "guido",   
    "jacob",  "jesus",  "jorge",  "jonas", "jordi", "justo", "italo",
-  "josue",  "julen", "julio", "junio", "kevin", 
+  "josue",  "julen", "julio", "kevin", 
    "lucas",  "lucio", 
   "mario", "marco", "mauro",  "nando",  "oscar", "mateo", "oriol", "piero", "renzo",
   "pablo", "pedro",  "ramon", 
@@ -6637,7 +6637,7 @@ function showStreakCelebration(streakCount) {
   // Create image element
   const img = document.createElement('img');
   img.className = 'streak-image';
-  img.src = `images/wins/${streakCount}_wins.png`;
+  img.src = `/images/wins/${streakCount}_wins.png`;
   img.alt = `${streakCount} wins streak!`;
   
   // Add image to container
