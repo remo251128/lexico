@@ -6637,7 +6637,7 @@ function showStreakCelebration(streakCount) {
   // Create image element
   const img = document.createElement('img');
   img.className = 'streak-image';
-  img.src = `/images/wins/${streakCount}_wins.png`;
+  img.src = `/images/${streakCount}_wins.png`;
   img.alt = `${streakCount} wins streak!`;
   
   // Add image to container
