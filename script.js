@@ -5091,6 +5091,10 @@ function handleUrlRouting() {
         versionPath = parts[0];
         lang = parts[1];
         console.log("🔍 Extracted versionPath:", versionPath, "lang:", lang);
+
+console.log("🔍 DEBUG - versionPath:", `"${versionPath}"`, "typeof:", typeof versionPath);
+console.log("🔍 DEBUG - VERSION_CONFIG content:", VERSION_CONFIG);
+
     } else if (parts.length === 1) {
         versionPath = parts[0];
         lang = 'es';
