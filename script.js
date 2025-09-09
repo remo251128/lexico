@@ -5081,6 +5081,11 @@ const VERSION_CONFIG = {
 
 function handleUrlRouting() {
     // Get the current path from the browser's address bar (this works for both initial load and popstate)
+
+    console.log("🔄 Handling URL:", window.location.pathname);
+    console.log("VERSION_CONFIG keys:", Object.keys(VERSION_CONFIG));
+
+
     const path = window.location.pathname; // e.g., "/footballteams/en"
     
     // Split the path into parts and filter out empty strings
