@@ -5108,7 +5108,7 @@ function handleUrlRouting() {
         updateLanguage();
     }
 
-    // Find and set the game version - FIXED ORDER
+    // Find and set the game version - FIXED ORDER AND MATCHING
     let versionFound = false;
 
     // 1. FIRST check old country system
@@ -5117,22 +5117,32 @@ function handleUrlRouting() {
         updateCountryUI();
         versionFound = true;
     }
-    // 2. THEN check VERSION_CONFIG (new system)
-    else if (VERSION_CONFIG[versionPath]) {
-        const config = VERSION_CONFIG[versionPath];
-        currentCountry = versionPath;
-        applyVersionStyles(config);
-        updateCountryUI(); // Ensure UI updates
-        versionFound = true;
-    }
-    // 3. THEN check special football mode
+    // 2. THEN check special football mode
     else if (versionPath === 'football-players') {
         currentCountry = 'football-players';
         updateCountryUI();
         versionFound = true;
     }
-    // 4. If no version was found, default to Argentina
+    // 3. THEN check VERSION_CONFIG (new system) - WITH FIXED MATCHING
     else {
+        // Convert to lowercase for case-insensitive matching
+        const versionKey = versionPath.toLowerCase();
+        const configEntry = Object.entries(VERSION_CONFIG).find(
+            ([key, config]) => key.toLowerCase() === versionKey || 
+                              (config.urlPath && config.urlPath.toLowerCase() === versionKey)
+        );
+        
+        if (configEntry) {
+            const [versionId, config] = configEntry;
+            currentCountry = versionId;
+            applyVersionStyles(config);
+            updateCountryUI();
+            versionFound = true;
+        }
+    }
+
+    // 4. If no version was found, default to Argentina
+    if (!versionFound) {
         currentCountry = 'argentina';
         updateCountryUI();
     }
@@ -5143,7 +5153,6 @@ function handleUrlRouting() {
         sessionStorage.removeItem('redirect');
     }, 100);
 }
-
 
 function generateVersionLinks() {
   let html = '';
