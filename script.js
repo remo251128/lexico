@@ -5080,9 +5080,6 @@ const VERSION_CONFIG = {
 
 
 function handleUrlRouting() {
-    console.log("🔄 Handling URL:", window.location.pathname);
-    console.log("VERSION_CONFIG keys:", Object.keys(VERSION_CONFIG));
-
     const path = window.location.pathname;
     const parts = path.split('/').filter(p => p);
     let versionPath, lang;
@@ -5090,17 +5087,10 @@ function handleUrlRouting() {
     if (parts.length >= 2) {
         versionPath = parts[0];
         lang = parts[1];
-        console.log("🔍 Extracted versionPath:", versionPath, "lang:", lang);
-
-console.log("🔍 DEBUG - versionPath:", `"${versionPath}"`, "typeof:", typeof versionPath);
-console.log("🔍 DEBUG - VERSION_CONFIG content:", VERSION_CONFIG);
-
     } else if (parts.length === 1) {
         versionPath = parts[0];
         lang = 'es';
-        console.log("🔍 Single part - versionPath:", versionPath, "default lang: es");
     } else {
-        console.log("🔍 Root path - defaulting to argentina/es");
         currentCountry = 'argentina';
         currentLanguage = 'es';
         updateCountryUI();
@@ -5115,62 +5105,44 @@ console.log("🔍 DEBUG - VERSION_CONFIG content:", VERSION_CONFIG);
     // Set language if valid
     if (LANGUAGES[lang]) {
         currentLanguage = lang;
-        console.log("🗣️ Setting language to:", currentLanguage);
         updateLanguage();
     }
 
-    // Find and set the game version
+    // Find and set the game version - FIXED ORDER
     let versionFound = false;
-    let checkedConfigs = [];
 
-    // 1. FIRST check old country system (this should fix Argentina/Chile/etc.)
+    // 1. FIRST check old country system
     if (['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(versionPath)) {
         currentCountry = versionPath;
-        console.log("✅ Found in old country system:", currentCountry);
         updateCountryUI();
         versionFound = true;
     }
     // 2. THEN check VERSION_CONFIG (new system)
-    else {
-        for (const [versionId, config] of Object.entries(VERSION_CONFIG)) {
-            const configPath = config.urlPath || versionId;
-            const isMatch = versionPath === configPath;
-            checkedConfigs.push(`${versionPath} === ${configPath}? ${isMatch}`);
-            
-            if (isMatch) {
-                currentCountry = versionId;
-                console.log("✅ Found in VERSION_CONFIG:", currentCountry);
-                applyVersionStyles(config);
-                updateCountryUI();
-                versionFound = true;
-                break;
-            }
-        }
+    else if (VERSION_CONFIG[versionPath]) {
+        const config = VERSION_CONFIG[versionPath];
+        currentCountry = versionPath;
+        applyVersionStyles(config);
+        updateCountryUI(); // Ensure UI updates
+        versionFound = true;
     }
-
     // 3. THEN check special football mode
-    if (!versionFound && versionPath === 'football-players') {
+    else if (versionPath === 'football-players') {
         currentCountry = 'football-players';
-        console.log("✅ Found football-players mode");
         updateCountryUI();
         versionFound = true;
     }
-
     // 4. If no version was found, default to Argentina
-    if (!versionFound) {
+    else {
         currentCountry = 'argentina';
-        console.log("⚠️ Version not found, defaulting to argentina. Checks:", checkedConfigs);
         updateCountryUI();
     }
-
-    console.log("🎯 Final settings - country:", currentCountry, "language:", currentLanguage);
 
     // Start the game
     setTimeout(() => {
         newGame();
         sessionStorage.removeItem('redirect');
     }, 100);
-}   
+}
 
 
 function generateVersionLinks() {
