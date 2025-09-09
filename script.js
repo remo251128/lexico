@@ -5080,17 +5080,29 @@ const VERSION_CONFIG = {
 
 
 function handleUrlRouting() {
-    const path = window.location.pathname;
-    const parts = path.split('/').filter(p => p);
-    let versionPath, lang;
+    // Get the current path from the browser's address bar (this works for both initial load and popstate)
+    console.log("🔄 Handling URL:", window.location.pathname);
+    console.log("VERSION_CONFIG keys:", Object.keys(VERSION_CONFIG));
 
+    const path = window.location.pathname; // e.g., "/footballteams/en"
+    
+    // Split the path into parts and filter out empty strings
+    const parts = path.split('/').filter(p => p);
+    
+    // Process the path parts to determine mode and language
+    let versionPath, lang;
+    
     if (parts.length >= 2) {
+        // Path is like /version/lang
         versionPath = parts[0];
         lang = parts[1];
+        console.log("🔍 Extracted versionPath:", versionPath);
     } else if (parts.length === 1) {
+        // Path is just /version (default to a language)
         versionPath = parts[0];
-        lang = 'es';
+        lang = 'es'; // Default language
     } else {
+        // Path is just / (root), default to Argentina Spanish
         currentCountry = 'argentina';
         currentLanguage = 'es';
         updateCountryUI();
@@ -5099,60 +5111,58 @@ function handleUrlRouting() {
             newGame();
             sessionStorage.removeItem('redirect');
         }, 100);
-        return;
+        return; // Exit early for root path
     }
-
-    // Set language if valid
+    
+    // 1. Set Language if valid
     if (LANGUAGES[lang]) {
         currentLanguage = lang;
         updateLanguage();
     }
-
-    // Find and set the game version - FIXED ORDER AND MATCHING
+    
+    // 2. Find and Set the Game Version
     let versionFound = false;
-
-    // 1. FIRST check old country system
-    if (['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(versionPath)) {
-        currentCountry = versionPath;
-        updateCountryUI();
-        versionFound = true;
+    
+    // Check VERSION_CONFIG first (new system)
+    for (const [versionId, config] of Object.entries(VERSION_CONFIG)) {
+        // Check if the path matches either the custom urlPath or the versionId
+        const configPath = config.urlPath || versionId;
+        if (versionPath === configPath) {
+            currentCountry = versionId;
+            applyVersionStyles(config);
+            updateCountryUI(); // ← CRITICAL FIX: This was missing
+            versionFound = true;
+            break;
+        }
     }
-    // 2. THEN check special football mode
-    else if (versionPath === 'football-players') {
+    
+    // If not found in VERSION_CONFIG, check special football mode
+    if (!versionFound && versionPath === 'football-players') {
         currentCountry = 'football-players';
         updateCountryUI();
         versionFound = true;
     }
-    // 3. THEN check VERSION_CONFIG (new system) - WITH FIXED MATCHING
-    else {
-        // Convert to lowercase for case-insensitive matching
-        const versionKey = versionPath.toLowerCase();
-        const configEntry = Object.entries(VERSION_CONFIG).find(
-            ([key, config]) => key.toLowerCase() === versionKey || 
-                              (config.urlPath && config.urlPath.toLowerCase() === versionKey)
-        );
-        
-        if (configEntry) {
-            const [versionId, config] = configEntry;
-            currentCountry = versionId;
-            applyVersionStyles(config);
-            updateCountryUI();
-            versionFound = true;
-        }
+    
+    // If still not found, check old country system
+    if (!versionFound && ['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(versionPath)) {
+        currentCountry = versionPath;
+        updateCountryUI();
+        versionFound = true;
     }
-
-    // 4. If no version was found, default to Argentina
+    
+    // 3. If no version was found from the path, default to Argentina
     if (!versionFound) {
         currentCountry = 'argentina';
         updateCountryUI();
     }
-
-    // Start the game
+    
+    // 4. Start a New Game with the new settings (with delay for UI updates)
     setTimeout(() => {
         newGame();
         sessionStorage.removeItem('redirect');
-    }, 100);
+    }, 100); // ← SECOND FIX: Added timeout
 }
+
 
 function generateVersionLinks() {
   let html = '';
