@@ -5517,11 +5517,10 @@ function init() {
     updateGameModesModal();
     setupGameModeSelection();
     
-    // Handle the initial URL the page was loaded with
-    handleUrlRouting();
+    // REMOVE this line completely:
+    // handleUrlRouting();
     
     // Initialize URL after a slight delay to ensure everything is ready
-    // This ensures the URL bar reflects the initial state
     setTimeout(() => {
         updateUrl();
     }, 50);
@@ -5614,31 +5613,25 @@ function updateUrl() {
 function updateUrl() {
     let path;
     
-    // Handle VERSION_CONFIG modes (new system)
     if (VERSION_CONFIG[currentCountry]) {
         const config = VERSION_CONFIG[currentCountry];
         const versionPath = config.urlPath || currentCountry;
         path = `/${versionPath}/${currentLanguage}`;
-    }
-    // Handle football players mode
-    else if (currentCountry === 'football-players') {
+    } else if (currentCountry === 'football-players') {
         path = `/football-players/${currentLanguage}`;
-    }
-    // Handle country modes (original system)
-    else {
+    } else {
         path = `/${currentCountry}/${currentLanguage}`;
     }
     
-    // Special case for default version to keep root URL clean if desired
-    // if (currentCountry === 'argentina' && currentLanguage === 'es' && window.location.pathname === '/') {
-    //     // Already at root, no need to update URL
-    //     return;
-    // }
-    
-    // Only update if different from current URL to avoid redundant history entries
+    // Only update if different from current URL
     if (window.location.pathname !== path) {
-        // Use pushState to change the URL and add an entry to the history stack
+        // TEMPORARILY remove the event listener to prevent loop
+        window.removeEventListener('popstate', handleUrlRouting);
         window.history.pushState({}, '', path);
+        // Re-add the listener after a short delay
+        setTimeout(() => {
+            window.addEventListener('popstate', handleUrlRouting);
+        }, 100);
     }
 }
 
