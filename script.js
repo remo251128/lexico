@@ -5081,8 +5081,10 @@ const VERSION_CONFIG = {
 
 function handleUrlRouting() {
     // Get the current path from the browser's address bar (this works for both initial load and popstate)
+
     console.log("🔄 Handling URL:", window.location.pathname);
     console.log("VERSION_CONFIG keys:", Object.keys(VERSION_CONFIG));
+
 
     const path = window.location.pathname; // e.g., "/footballteams/en"
     
@@ -5096,7 +5098,9 @@ function handleUrlRouting() {
         // Path is like /version/lang
         versionPath = parts[0];
         lang = parts[1];
+
         console.log("🔍 Extracted versionPath:", versionPath);
+
     } else if (parts.length === 1) {
         // Path is just /version (default to a language)
         versionPath = parts[0];
@@ -5107,10 +5111,8 @@ function handleUrlRouting() {
         currentLanguage = 'es';
         updateCountryUI();
         updateLanguage();
-        setTimeout(() => {
-            newGame();
-            sessionStorage.removeItem('redirect');
-        }, 100);
+        newGame();
+        sessionStorage.removeItem('redirect');
         return; // Exit early for root path
     }
     
@@ -5127,12 +5129,12 @@ function handleUrlRouting() {
     for (const [versionId, config] of Object.entries(VERSION_CONFIG)) {
         // Check if the path matches either the custom urlPath or the versionId
         const configPath = config.urlPath || versionId;
-        if (VERSION_CONFIG[versionPath]) {  // Direct key lookup
-    currentCountry = versionPath;
-    applyVersionStyles(VERSION_CONFIG[versionPath]);
-    updateCountryUI();
-    versionFound = true;
-}
+        if (versionPath === configPath) {
+            currentCountry = versionId;
+            applyVersionStyles(config);
+            versionFound = true;
+            break;
+        }
     }
     
     // If not found in VERSION_CONFIG, check special football mode
@@ -5155,11 +5157,11 @@ function handleUrlRouting() {
         updateCountryUI();
     }
     
-    // 4. Start a New Game with the new settings (with delay for UI updates)
-    setTimeout(() => {
-        newGame();
-        sessionStorage.removeItem('redirect');
-    }, 100); // ← SECOND FIX: Added timeout
+    // 4. Start a New Game with the new settings
+    newGame();
+    
+    // 5. Clear the sessionStorage redirect now that we've handled it via the URL
+    sessionStorage.removeItem('redirect');
 }
 
 
@@ -5516,10 +5518,11 @@ function init() {
     updateGameModesModal();
     setupGameModeSelection();
     
-    // REMOVE this line completely:
-    // handleUrlRouting();
+    // Handle the initial URL the page was loaded with
+    handleUrlRouting();
     
     // Initialize URL after a slight delay to ensure everything is ready
+    // This ensures the URL bar reflects the initial state
     setTimeout(() => {
         updateUrl();
     }, 50);
@@ -5612,25 +5615,36 @@ function updateUrl() {
 function updateUrl() {
     let path;
     
+    // Handle VERSION_CONFIG modes (new system)
     if (VERSION_CONFIG[currentCountry]) {
         const config = VERSION_CONFIG[currentCountry];
         const versionPath = config.urlPath || currentCountry;
         path = `/${versionPath}/${currentLanguage}`;
-    } else if (currentCountry === 'football-players') {
+    }
+    // Handle football players mode
+    else if (currentCountry === 'football-players') {
         path = `/football-players/${currentLanguage}`;
-    } else {
+    }
+    // Handle country modes (original system)
+    else {
         path = `/${currentCountry}/${currentLanguage}`;
     }
     
-    // Only update if different from current URL
+    // DEBUG: Log what's happening
+    console.log("🔗 updateUrl() Debug:");
+    console.log("  - currentCountry:", currentCountry);
+    console.log("  - currentLanguage:", currentLanguage);
+    console.log("  - current pathname:", window.location.pathname);
+    console.log("  - new path:", path);
+    console.log("  - should update?", window.location.pathname !== path);
+    
+    // Only update if different from current URL to avoid redundant history entries
     if (window.location.pathname !== path) {
-        // TEMPORARILY remove the event listener to prevent loop
-        window.removeEventListener('popstate', handleUrlRouting);
+        // Use pushState to change the URL and add an entry to the history stack
         window.history.pushState({}, '', path);
-        // Re-add the listener after a short delay
-        setTimeout(() => {
-            window.addEventListener('popstate', handleUrlRouting);
-        }, 100);
+        console.log("✅ pushState() called with:", path);
+    } else {
+        console.log("❌ pushState() skipped - paths are identical");
     }
 }
 
