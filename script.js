@@ -5518,15 +5518,13 @@ function init() {
     updateGameModesModal();
     setupGameModeSelection();
     
-    // Only handle routing if not already at a valid URL
-    if (window.location.pathname === '/') {
-        handleUrlRouting();
-    } else {
-        // We're already at a specific URL, don't override it
-        console.log("Already at specific URL:", window.location.pathname);
-    }
+    // REMOVE THIS COMPLETELY:
+    // handleUrlRouting();
     
-    // REMOVE THIS: setTimeout(() => { updateUrl(); }, 50);
+    // Also remove the updateUrl timeout:
+    // setTimeout(() => { updateUrl(); }, 50);
+    
+    console.log("✅ Initialization complete. Ready for URL handling.");
 }
 
 // Set up event listeners
@@ -5614,6 +5612,12 @@ function updateUrl() {
 */
 
 function updateUrl() {
+    // Don't update URL during initial page load to prevent loops
+    if (window.location.pathname === '/' && !currentCountry) {
+        console.log("⏸️ Skipping URL update during initial load");
+        return;
+    }
+    
     let path;
     
     // Handle VERSION_CONFIG modes (new system)
@@ -5631,21 +5635,23 @@ function updateUrl() {
         path = `/${currentCountry}/${currentLanguage}`;
     }
     
-    // DEBUG: Log what's happening
-    console.log("🔗 updateUrl() Debug:");
-    console.log("  - currentCountry:", currentCountry);
-    console.log("  - currentLanguage:", currentLanguage);
-    console.log("  - current pathname:", window.location.pathname);
-    console.log("  - new path:", path);
-    console.log("  - should update?", window.location.pathname !== path);
-    
     // Only update if different from current URL to avoid redundant history entries
     if (window.location.pathname !== path) {
+        console.log("🔗 Updating URL from:", window.location.pathname, "to:", path);
+        
+        // Temporarily remove the popstate listener to prevent loops
+        window.removeEventListener('popstate', handleUrlRouting);
+        
         // Use pushState to change the URL and add an entry to the history stack
         window.history.pushState({}, '', path);
-        console.log("✅ pushState() called with:", path);
+        
+        // Re-add the listener after a short delay
+        setTimeout(() => {
+            window.addEventListener('popstate', handleUrlRouting);
+            console.log("✅ URL update complete, listener re-added");
+        }, 100);
     } else {
-        console.log("❌ pushState() skipped - paths are identical");
+        console.log("✅ URL already correct:", path);
     }
 }
 
