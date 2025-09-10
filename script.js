@@ -5079,89 +5079,76 @@ const VERSION_CONFIG = {
 };
 
 
+let isHandlingRouting = false;
+
 function handleUrlRouting() {
-    // Get the current path from the browser's address bar (this works for both initial load and popstate)
-
-    console.log("🔄 Handling URL:", window.location.pathname);
-    console.log("VERSION_CONFIG keys:", Object.keys(VERSION_CONFIG));
-
-
-    const path = window.location.pathname; // e.g., "/footballteams/en"
+    if (isHandlingRouting) return;
+    isHandlingRouting = true;
     
-    // Split the path into parts and filter out empty strings
+    const path = window.location.pathname;
     const parts = path.split('/').filter(p => p);
-    
-    // Process the path parts to determine mode and language
     let versionPath, lang;
-    
+
     if (parts.length >= 2) {
-        // Path is like /version/lang
         versionPath = parts[0];
         lang = parts[1];
-
-        console.log("🔍 Extracted versionPath:", versionPath);
-
     } else if (parts.length === 1) {
-        // Path is just /version (default to a language)
         versionPath = parts[0];
-        lang = 'es'; // Default language
+        lang = 'es';
     } else {
-        // Path is just / (root), default to Argentina Spanish
         currentCountry = 'argentina';
         currentLanguage = 'es';
         updateCountryUI();
         updateLanguage();
-        newGame();
-        sessionStorage.removeItem('redirect');
-        return; // Exit early for root path
+        setTimeout(() => {
+            newGame();
+            sessionStorage.removeItem('redirect');
+        }, 100);
+        isHandlingRouting = false;
+        return;
     }
-    
-    // 1. Set Language if valid
+
     if (LANGUAGES[lang]) {
         currentLanguage = lang;
         updateLanguage();
     }
-    
-    // 2. Find and Set the Game Version
+
     let versionFound = false;
-    
-    // Check VERSION_CONFIG first (new system)
+
     for (const [versionId, config] of Object.entries(VERSION_CONFIG)) {
-        // Check if the path matches either the custom urlPath or the versionId
         const configPath = config.urlPath || versionId;
         if (versionPath === configPath) {
             currentCountry = versionId;
             applyVersionStyles(config);
+            updateCountryUI();
             versionFound = true;
             break;
         }
     }
-    
-    // If not found in VERSION_CONFIG, check special football mode
+
     if (!versionFound && versionPath === 'football-players') {
         currentCountry = 'football-players';
         updateCountryUI();
         versionFound = true;
     }
-    
-    // If still not found, check old country system
+
     if (!versionFound && ['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(versionPath)) {
         currentCountry = versionPath;
         updateCountryUI();
         versionFound = true;
     }
-    
-    // 3. If no version was found from the path, default to Argentina
+
     if (!versionFound) {
         currentCountry = 'argentina';
         updateCountryUI();
     }
+
+    setTimeout(() => {
+        newGame();
+        sessionStorage.removeItem('redirect');
+    }, 100);
     
-    // 4. Start a New Game with the new settings
-    newGame();
-    
-    // 5. Clear the sessionStorage redirect now that we've handled it via the URL
-    sessionStorage.removeItem('redirect');
+    isHandlingRouting = false;
 }
 
 
@@ -5518,13 +5505,7 @@ function init() {
     updateGameModesModal();
     setupGameModeSelection();
     
-    // REMOVE THIS LINE - it causes the loop
-    // handleUrlRouting();
-    
-    // Keep this to set initial URL
-    setTimeout(() => {
-        updateUrl();
-    }, 50);
+    // REMOVED: handleUrlRouting(); - This was causing the loop
 }
 
 // Set up event listeners
@@ -5611,107 +5592,74 @@ function updateUrl() {
 }
 */
 
+let isUpdatingUrl = false;
+
 function updateUrl() {
-    // Generate the expected path for the current state
-    let expectedPath;
+    if (isUpdatingUrl) return;
+    isUpdatingUrl = true;
+    
+    let path;
     
     if (VERSION_CONFIG[currentCountry]) {
         const config = VERSION_CONFIG[currentCountry];
         const versionPath = config.urlPath || currentCountry;
-        expectedPath = `/${versionPath}/${currentLanguage}`;
+        path = `/${versionPath}/${currentLanguage}`;
     }
     else if (currentCountry === 'football-players') {
-        expectedPath = `/football-players/${currentLanguage}`;
+        path = `/football-players/${currentLanguage}`;
     }
     else {
-        expectedPath = `/${currentCountry}/${currentLanguage}`;
+        path = `/${currentCountry}/${currentLanguage}`;
     }
     
-    // Don't update if we're already at the correct URL
-    if (window.location.pathname === expectedPath) {
-        console.log("✅ Already at correct URL:", window.location.pathname);
-        return; // Already at correct URL, no need to update
-    }
-    
-    // Generate the new path (same logic as above)
-    let path = expectedPath;
-    
-    // Only update if different from current URL
     if (window.location.pathname !== path) {
-        console.log("🔗 Updating URL from:", window.location.pathname, "to:", path);
         window.history.pushState({}, '', path);
     }
+    
+    isUpdatingUrl = false;
 }
 
 // Handle game mode selection
 function setupGameModeSelection() {
   const modal = document.getElementById('game-modes-modal');
+  const gameModeOptions = document.querySelectorAll('.game-mode-option');
   
-  // Open modal when button clicked
   document.getElementById('other-versions-btn').addEventListener('click', () => {
-    console.log("📱 Modal opened");
     modal.style.display = 'flex';
   });
   
-  // Close modal
   modal.querySelector('.close-btn').addEventListener('click', () => {
-    console.log("❌ Modal closed via X button");
     modal.style.display = 'none';
   });
   
-  // Handle mode selection with EVENT DELEGATION
-  modal.addEventListener('click', (e) => {
-    console.log("🖱️ Modal clicked:", e.target);
-    
-    const option = e.target.closest('.game-mode-option');
-    if (!option) {
-      console.log("❌ Click was not on a game mode option");
-      return;
-    }
-    
-    const mode = option.dataset.mode;
-    console.log("🎯 Game mode selected:", mode);
-    
-    window.scrollTo(0, 0);
-    
-    // Track which branch executes
-    let branch = 'none';
-    
-    if (mode === 'football-players') {
-      branch = 'football-players';
-      currentCountry = 'football-players';
-      console.log("⚽ Setting country to football-players");
-      updateCountryUI();
-      updateUrl();
-      newGame();
-    } 
-    else if (['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(mode)) {
-      branch = 'old-country';
-      currentCountry = mode;
-      console.log("🇦🇷 Setting country to", mode);
-      updateCountryUI();
-      updateUrl();
-      newGame();
-    }
-    else if (VERSION_CONFIG[mode]) {
-      branch = 'new-version';
-      currentCountry = mode;
-      console.log("🆕 Setting country to", mode, "Config:", VERSION_CONFIG[mode]);
-      applyVersionStyles(VERSION_CONFIG[mode]);
-      updateCountryUI();
-      updateUrl();
-      newGame();
-    }
-    else {
-      console.error("❌ Unknown game mode:", mode, "Available:", Object.keys(VERSION_CONFIG));
-      return;
-    }
-    
-    console.log("✅ Executed branch:", branch, "Current country:", currentCountry);
-    modal.style.display = 'none';
+  gameModeOptions.forEach(option => {
+    option.addEventListener('click', () => {
+      const mode = option.dataset.mode;
+      window.scrollTo(0, 0);
+      
+      if (mode === 'football-players') {
+        currentCountry = 'football-players';
+        updateCountryUI();
+        updateUrl();
+        newGame();
+      } 
+      else if (['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(mode)) {
+        currentCountry = mode;
+        updateCountryUI();
+        updateUrl();
+        newGame();
+      }
+      else if (VERSION_CONFIG[mode]) {
+        currentCountry = mode;
+        applyVersionStyles(VERSION_CONFIG[mode]);
+        updateCountryUI();
+        updateUrl();
+        newGame();
+      }
+      
+      modal.style.display = 'none';
+    });
   });
-
-  console.log("✅ Game mode selection setup complete");
 }
 
 
