@@ -5127,13 +5127,12 @@ function handleUrlRouting() {
     for (const [versionId, config] of Object.entries(VERSION_CONFIG)) {
         // Check if the path matches either the custom urlPath or the versionId
         const configPath = config.urlPath || versionId;
-        if (versionPath === configPath) {
-            currentCountry = versionId;
-            applyVersionStyles(config);
-            updateCountryUI(); // ← CRITICAL FIX: This was missing
-            versionFound = true;
-            break;
-        }
+        if (VERSION_CONFIG[versionPath]) {  // Direct key lookup
+    currentCountry = versionPath;
+    applyVersionStyles(VERSION_CONFIG[versionPath]);
+    updateCountryUI();
+    versionFound = true;
+}
     }
     
     // If not found in VERSION_CONFIG, check special football mode
