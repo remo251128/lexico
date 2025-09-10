@@ -5079,76 +5079,89 @@ const VERSION_CONFIG = {
 };
 
 
-let isHandlingRouting = false;
-
 function handleUrlRouting() {
-    if (isHandlingRouting) return;
-    isHandlingRouting = true;
-    
-    const path = window.location.pathname;
-    const parts = path.split('/').filter(p => p);
-    let versionPath, lang;
+    // Get the current path from the browser's address bar (this works for both initial load and popstate)
 
+    console.log("🔄 Handling URL:", window.location.pathname);
+    console.log("VERSION_CONFIG keys:", Object.keys(VERSION_CONFIG));
+
+
+    const path = window.location.pathname; // e.g., "/footballteams/en"
+    
+    // Split the path into parts and filter out empty strings
+    const parts = path.split('/').filter(p => p);
+    
+    // Process the path parts to determine mode and language
+    let versionPath, lang;
+    
     if (parts.length >= 2) {
+        // Path is like /version/lang
         versionPath = parts[0];
         lang = parts[1];
+
+        console.log("🔍 Extracted versionPath:", versionPath);
+
     } else if (parts.length === 1) {
+        // Path is just /version (default to a language)
         versionPath = parts[0];
-        lang = 'es';
+        lang = 'es'; // Default language
     } else {
+        // Path is just / (root), default to Argentina Spanish
         currentCountry = 'argentina';
         currentLanguage = 'es';
         updateCountryUI();
         updateLanguage();
-        setTimeout(() => {
-            newGame();
-            sessionStorage.removeItem('redirect');
-        }, 100);
-        isHandlingRouting = false;
-        return;
+        newGame();
+        sessionStorage.removeItem('redirect');
+        return; // Exit early for root path
     }
-
+    
+    // 1. Set Language if valid
     if (LANGUAGES[lang]) {
         currentLanguage = lang;
         updateLanguage();
     }
-
+    
+    // 2. Find and Set the Game Version
     let versionFound = false;
-
+    
+    // Check VERSION_CONFIG first (new system)
     for (const [versionId, config] of Object.entries(VERSION_CONFIG)) {
+        // Check if the path matches either the custom urlPath or the versionId
         const configPath = config.urlPath || versionId;
         if (versionPath === configPath) {
             currentCountry = versionId;
             applyVersionStyles(config);
-            updateCountryUI();
             versionFound = true;
             break;
         }
     }
-
+    
+    // If not found in VERSION_CONFIG, check special football mode
     if (!versionFound && versionPath === 'football-players') {
         currentCountry = 'football-players';
         updateCountryUI();
         versionFound = true;
     }
-
+    
+    // If still not found, check old country system
     if (!versionFound && ['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(versionPath)) {
         currentCountry = versionPath;
         updateCountryUI();
         versionFound = true;
     }
-
+    
+    // 3. If no version was found from the path, default to Argentina
     if (!versionFound) {
         currentCountry = 'argentina';
         updateCountryUI();
     }
-
-    setTimeout(() => {
-        newGame();
-        sessionStorage.removeItem('redirect');
-    }, 100);
     
-    isHandlingRouting = false;
+    // 4. Start a New Game with the new settings
+    newGame();
+    
+    // 5. Clear the sessionStorage redirect now that we've handled it via the URL
+    sessionStorage.removeItem('redirect');
 }
 
 
@@ -5505,7 +5518,14 @@ function init() {
     updateGameModesModal();
     setupGameModeSelection();
     
-    // REMOVED: handleUrlRouting(); - This was causing the loop
+    // Handle the initial URL the page was loaded with
+    handleUrlRouting();
+    
+    // Initialize URL after a slight delay to ensure everything is ready
+    // This ensures the URL bar reflects the initial state
+    setTimeout(() => {
+        updateUrl();
+    }, 50);
 }
 
 // Set up event listeners
@@ -5592,31 +5612,35 @@ function updateUrl() {
 }
 */
 
-let isUpdatingUrl = false;
-
 function updateUrl() {
-    if (isUpdatingUrl) return;
-    isUpdatingUrl = true;
-    
     let path;
     
+    // Handle VERSION_CONFIG modes (new system)
     if (VERSION_CONFIG[currentCountry]) {
         const config = VERSION_CONFIG[currentCountry];
         const versionPath = config.urlPath || currentCountry;
         path = `/${versionPath}/${currentLanguage}`;
     }
+    // Handle football players mode
     else if (currentCountry === 'football-players') {
         path = `/football-players/${currentLanguage}`;
     }
+    // Handle country modes (original system)
     else {
         path = `/${currentCountry}/${currentLanguage}`;
     }
     
+    // Special case for default version to keep root URL clean if desired
+    // if (currentCountry === 'argentina' && currentLanguage === 'es' && window.location.pathname === '/') {
+    //     // Already at root, no need to update URL
+    //     return;
+    // }
+    
+    // Only update if different from current URL to avoid redundant history entries
     if (window.location.pathname !== path) {
+        // Use pushState to change the URL and add an entry to the history stack
         window.history.pushState({}, '', path);
     }
-    
-    isUpdatingUrl = false;
 }
 
 // Handle game mode selection
@@ -5624,38 +5648,43 @@ function setupGameModeSelection() {
   const modal = document.getElementById('game-modes-modal');
   const gameModeOptions = document.querySelectorAll('.game-mode-option');
   
+  // Open modal when button clicked
   document.getElementById('other-versions-btn').addEventListener('click', () => {
     modal.style.display = 'flex';
   });
   
+  // Close modal
   modal.querySelector('.close-btn').addEventListener('click', () => {
     modal.style.display = 'none';
   });
   
+  // Handle mode selection
   gameModeOptions.forEach(option => {
     option.addEventListener('click', () => {
       const mode = option.dataset.mode;
+
       window.scrollTo(0, 0);
       
       if (mode === 'football-players') {
-        currentCountry = 'football-players';
-        updateCountryUI();
-        updateUrl();
-        newGame();
-      } 
+                currentCountry = 'football-players';
+                updateCountryUI();
+                updateUrl();
+                newGame();
+            } 
+
       else if (['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(mode)) {
+        // Same functionality as flag click
         currentCountry = mode;
         updateCountryUI();
         updateUrl();
         newGame();
+        
+        // THIS?????
+        //if (typeof saveCountryPreference === 'function') {
+        //  saveCountryPreference();
+        //}
       }
-      else if (VERSION_CONFIG[mode]) {
-        currentCountry = mode;
-        applyVersionStyles(VERSION_CONFIG[mode]);
-        updateCountryUI();
-        updateUrl();
-        newGame();
-      }
+      // Football players mode does nothing for now
       
       modal.style.display = 'none';
     });
