@@ -5518,13 +5518,13 @@ function init() {
     updateGameModesModal();
     setupGameModeSelection();
     
-    // REMOVE THIS COMPLETELY:
+    // REMOVE THIS LINE - it causes the loop
     // handleUrlRouting();
     
-    // Also remove the updateUrl timeout:
-    // setTimeout(() => { updateUrl(); }, 50);
-    
-    console.log("✅ Initialization complete. Ready for URL handling.");
+    // Keep this to set initial URL
+    setTimeout(() => {
+        updateUrl();
+    }, 50);
 }
 
 // Set up event listeners
