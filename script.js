@@ -5612,46 +5612,34 @@ function updateUrl() {
 */
 
 function updateUrl() {
-    // Don't update URL during initial page load to prevent loops
-    if (window.location.pathname === '/' && !currentCountry) {
-        console.log("⏸️ Skipping URL update during initial load");
-        return;
-    }
+    // Generate the expected path for the current state
+    let expectedPath;
     
-    let path;
-    
-    // Handle VERSION_CONFIG modes (new system)
     if (VERSION_CONFIG[currentCountry]) {
         const config = VERSION_CONFIG[currentCountry];
         const versionPath = config.urlPath || currentCountry;
-        path = `/${versionPath}/${currentLanguage}`;
+        expectedPath = `/${versionPath}/${currentLanguage}`;
     }
-    // Handle football players mode
     else if (currentCountry === 'football-players') {
-        path = `/football-players/${currentLanguage}`;
+        expectedPath = `/football-players/${currentLanguage}`;
     }
-    // Handle country modes (original system)
     else {
-        path = `/${currentCountry}/${currentLanguage}`;
+        expectedPath = `/${currentCountry}/${currentLanguage}`;
     }
     
-    // Only update if different from current URL to avoid redundant history entries
+    // Don't update if we're already at the correct URL
+    if (window.location.pathname === expectedPath) {
+        console.log("✅ Already at correct URL:", window.location.pathname);
+        return; // Already at correct URL, no need to update
+    }
+    
+    // Generate the new path (same logic as above)
+    let path = expectedPath;
+    
+    // Only update if different from current URL
     if (window.location.pathname !== path) {
         console.log("🔗 Updating URL from:", window.location.pathname, "to:", path);
-        
-        // Temporarily remove the popstate listener to prevent loops
-        window.removeEventListener('popstate', handleUrlRouting);
-        
-        // Use pushState to change the URL and add an entry to the history stack
         window.history.pushState({}, '', path);
-        
-        // Re-add the listener after a short delay
-        setTimeout(() => {
-            window.addEventListener('popstate', handleUrlRouting);
-            console.log("✅ URL update complete, listener re-added");
-        }, 100);
-    } else {
-        console.log("✅ URL already correct:", path);
     }
 }
 
