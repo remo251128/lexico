@@ -5671,25 +5671,26 @@ function setupGameModeSelection() {
       window.scrollTo(0, 0);
       
       if (mode === 'football-players') {
-                currentCountry = 'football-players';
-                updateCountryUI();
-                updateUrl();
-                newGame();
-            } 
-
+        currentCountry = 'football-players';
+        updateCountryUI();
+        updateUrl();
+        newGame();
+      } 
       else if (['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(mode)) {
         // Same functionality as flag click
         currentCountry = mode;
         updateCountryUI();
         updateUrl();
         newGame();
-        
-        // THIS?????
-        //if (typeof saveCountryPreference === 'function') {
-        //  saveCountryPreference();
-        //}
       }
-      // Football players mode does nothing for now
+      // NEW CODE: Handle VERSION_CONFIG modes
+      else if (VERSION_CONFIG[mode]) {
+        currentCountry = mode;
+        applyVersionStyles(VERSION_CONFIG[mode]);
+        updateCountryUI();
+        updateUrl();
+        newGame();
+      }
       
       modal.style.display = 'none';
     });
