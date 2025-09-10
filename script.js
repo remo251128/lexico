@@ -5651,7 +5651,6 @@ function updateUrl() {
 // Handle game mode selection
 function setupGameModeSelection() {
   const modal = document.getElementById('game-modes-modal');
-  const gameModeOptions = document.querySelectorAll('.game-mode-option');
   
   // Open modal when button clicked
   document.getElementById('other-versions-btn').addEventListener('click', () => {
@@ -5663,37 +5662,41 @@ function setupGameModeSelection() {
     modal.style.display = 'none';
   });
   
-  // Handle mode selection
-  gameModeOptions.forEach(option => {
-    option.addEventListener('click', () => {
-      const mode = option.dataset.mode;
-
-      window.scrollTo(0, 0);
-      
-      if (mode === 'football-players') {
-        currentCountry = 'football-players';
-        updateCountryUI();
-        updateUrl();
-        newGame();
-      } 
-      else if (['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(mode)) {
-        // Same functionality as flag click
-        currentCountry = mode;
-        updateCountryUI();
-        updateUrl();
-        newGame();
-      }
-      // NEW CODE: Handle VERSION_CONFIG modes
-      else if (VERSION_CONFIG[mode]) {
-        currentCountry = mode;
-        applyVersionStyles(VERSION_CONFIG[mode]);
-        updateCountryUI();
-        updateUrl();
-        newGame();
-      }
-      
-      modal.style.display = 'none';
-    });
+  // Handle mode selection with EVENT DELEGATION
+  modal.addEventListener('click', (e) => {
+    const option = e.target.closest('.game-mode-option');
+    if (!option) return;
+    
+    const mode = option.dataset.mode;
+    console.log("🎯 Game mode selected:", mode);
+    
+    window.scrollTo(0, 0);
+    
+    if (mode === 'football-players') {
+      currentCountry = 'football-players';
+      updateCountryUI();
+      updateUrl();
+      newGame();
+    } 
+    else if (['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(mode)) {
+      currentCountry = mode;
+      updateCountryUI();
+      updateUrl();
+      newGame();
+    }
+    else if (VERSION_CONFIG[mode]) {
+      currentCountry = mode;
+      applyVersionStyles(VERSION_CONFIG[mode]);
+      updateCountryUI();
+      updateUrl();
+      newGame();
+    }
+    else {
+      console.error("❌ Unknown game mode:", mode);
+      return;
+    }
+    
+    modal.style.display = 'none';
   });
 }
 
