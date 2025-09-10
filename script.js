@@ -5654,50 +5654,69 @@ function setupGameModeSelection() {
   
   // Open modal when button clicked
   document.getElementById('other-versions-btn').addEventListener('click', () => {
+    console.log("📱 Modal opened");
     modal.style.display = 'flex';
   });
   
   // Close modal
   modal.querySelector('.close-btn').addEventListener('click', () => {
+    console.log("❌ Modal closed via X button");
     modal.style.display = 'none';
   });
   
   // Handle mode selection with EVENT DELEGATION
   modal.addEventListener('click', (e) => {
+    console.log("🖱️ Modal clicked:", e.target);
+    
     const option = e.target.closest('.game-mode-option');
-    if (!option) return;
+    if (!option) {
+      console.log("❌ Click was not on a game mode option");
+      return;
+    }
     
     const mode = option.dataset.mode;
     console.log("🎯 Game mode selected:", mode);
     
     window.scrollTo(0, 0);
     
+    // Track which branch executes
+    let branch = 'none';
+    
     if (mode === 'football-players') {
+      branch = 'football-players';
       currentCountry = 'football-players';
+      console.log("⚽ Setting country to football-players");
       updateCountryUI();
       updateUrl();
       newGame();
     } 
     else if (['argentina', 'chile', 'peru', 'colombia', 'mexico'].includes(mode)) {
+      branch = 'old-country';
       currentCountry = mode;
+      console.log("🇦🇷 Setting country to", mode);
       updateCountryUI();
       updateUrl();
       newGame();
     }
     else if (VERSION_CONFIG[mode]) {
+      branch = 'new-version';
       currentCountry = mode;
+      console.log("🆕 Setting country to", mode, "Config:", VERSION_CONFIG[mode]);
       applyVersionStyles(VERSION_CONFIG[mode]);
       updateCountryUI();
       updateUrl();
       newGame();
     }
     else {
-      console.error("❌ Unknown game mode:", mode);
+      console.error("❌ Unknown game mode:", mode, "Available:", Object.keys(VERSION_CONFIG));
       return;
     }
     
+    console.log("✅ Executed branch:", branch, "Current country:", currentCountry);
     modal.style.display = 'none';
   });
+
+  console.log("✅ Game mode selection setup complete");
 }
 
 
