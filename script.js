@@ -5518,14 +5518,15 @@ function init() {
     updateGameModesModal();
     setupGameModeSelection();
     
-    // Handle the initial URL the page was loaded with
-    handleUrlRouting();
+    // Only handle routing if not already at a valid URL
+    if (window.location.pathname === '/') {
+        handleUrlRouting();
+    } else {
+        // We're already at a specific URL, don't override it
+        console.log("Already at specific URL:", window.location.pathname);
+    }
     
-    // Initialize URL after a slight delay to ensure everything is ready
-    // This ensures the URL bar reflects the initial state
-    setTimeout(() => {
-        updateUrl();
-    }, 50);
+    // REMOVE THIS: setTimeout(() => { updateUrl(); }, 50);
 }
 
 // Set up event listeners
