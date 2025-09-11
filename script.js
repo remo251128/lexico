@@ -5617,8 +5617,9 @@ function updateUrl() {
     
     // Handle VERSION_CONFIG modes (new system)
     if (VERSION_CONFIG[currentCountry]) {
-        // Use currentCountry directly since there's no urlPath property
-        path = `/${currentCountry}/${currentLanguage}`;
+        const config = VERSION_CONFIG[currentCountry];
+        const versionPath = config.urlPath || currentCountry;
+        path = `/${versionPath}/${currentLanguage}`;
     }
     // Handle football players mode
     else if (currentCountry === 'football-players') {
@@ -5629,8 +5630,15 @@ function updateUrl() {
         path = `/${currentCountry}/${currentLanguage}`;
     }
     
+    // Special case for default version to keep root URL clean if desired
+    // if (currentCountry === 'argentina' && currentLanguage === 'es' && window.location.pathname === '/') {
+    //     // Already at root, no need to update URL
+    //     return;
+    // }
+    
     // Only update if different from current URL to avoid redundant history entries
     if (window.location.pathname !== path) {
+        // Use pushState to change the URL and add an entry to the history stack
         window.history.pushState({}, '', path);
     }
 }

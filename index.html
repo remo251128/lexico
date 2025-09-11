@@ -93,7 +93,19 @@
   // Only redirect if not on root AND not a valid version path
   const path = window.location.pathname;
   const validPaths = ['/argentina', '/chile', '/peru', '/colombia', '/mexico', '/football-players'];
+  
+  // Dynamically add VERSION_CONFIG paths if available
+  if (typeof VERSION_CONFIG !== 'undefined') {
+    Object.keys(VERSION_CONFIG).forEach(version => {
+      validPaths.push(`/${version}`);
+      validPaths.push(`/${version}/en`);
+      validPaths.push(`/${version}/es`);
+    });
+  }
+  
   const isVersionPath = validPaths.some(validPath => path.startsWith(validPath));
+  
+  console.log('Path check:', path, 'Valid paths:', validPaths, 'Is version path:', isVersionPath);
   
   if (path !== '/' && !isVersionPath) {
     sessionStorage.redirect = path;
