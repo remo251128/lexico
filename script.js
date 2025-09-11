@@ -5080,40 +5080,28 @@ const VERSION_CONFIG = {
 
 
 function handleUrlRouting() {
-    // Get the current path from the browser's address bar (this works for both initial load and popstate)
-
     console.log("🔄 Handling URL:", window.location.pathname);
     console.log("VERSION_CONFIG keys:", Object.keys(VERSION_CONFIG));
 
-
-    const path = window.location.pathname; // e.g., "/footballteams/en"
-    
-    // Split the path into parts and filter out empty strings
+    const path = window.location.pathname;
     const parts = path.split('/').filter(p => p);
     
-    // Process the path parts to determine mode and language
     let versionPath, lang;
     
     if (parts.length >= 2) {
-        // Path is like /version/lang
         versionPath = parts[0];
         lang = parts[1];
-
-
-        
     } else if (parts.length === 1) {
-        // Path is just /version (default to a language)
         versionPath = parts[0];
-        lang = 'es'; // Default language
+        lang = 'es';
     } else {
-        // Path is just / (root), default to Argentina Spanish
         currentCountry = 'argentina';
         currentLanguage = 'es';
         updateCountryUI();
         updateLanguage();
         newGame();
         sessionStorage.removeItem('redirect');
-        return; // Exit early for root path
+        return;
     }
     
     // 1. Set Language if valid
@@ -5125,12 +5113,12 @@ function handleUrlRouting() {
     // 2. Find and Set the Game Version
     let versionFound = false;
     
-    // Check VERSION_CONFIG first (new system)
+    // Check VERSION_CONFIG first (new system) - FIXED LOGIC
     for (const [versionId, config] of Object.entries(VERSION_CONFIG)) {
-        // Check if the path matches either the custom urlPath or the versionId
+        // Use the urlPath if defined, otherwise use versionId
         const configPath = config.urlPath || versionId;
         if (versionPath === configPath) {
-            currentCountry = versionId;
+            currentCountry = versionId; // Use the versionId, not configPath
             applyVersionStyles(config);
             versionFound = true;
             break;
@@ -5630,15 +5618,8 @@ function updateUrl() {
         path = `/${currentCountry}/${currentLanguage}`;
     }
     
-    // Special case for default version to keep root URL clean if desired
-    // if (currentCountry === 'argentina' && currentLanguage === 'es' && window.location.pathname === '/') {
-    //     // Already at root, no need to update URL
-    //     return;
-    // }
-    
     // Only update if different from current URL to avoid redundant history entries
     if (window.location.pathname !== path) {
-        // Use pushState to change the URL and add an entry to the history stack
         window.history.pushState({}, '', path);
     }
 }
