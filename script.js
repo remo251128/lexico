@@ -5099,8 +5099,8 @@ function handleUrlRouting() {
         versionPath = parts[0];
         lang = parts[1];
 
-        console.log("🔍 Extracted versionPath:", versionPath);
 
+        
     } else if (parts.length === 1) {
         // Path is just /version (default to a language)
         versionPath = parts[0];
