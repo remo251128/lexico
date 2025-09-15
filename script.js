@@ -5080,11 +5080,40 @@ const VERSION_CONFIG = {
 
 
 function handleUrlRouting() {
-    // Get the current path from the browser's address bar (this works for both initial load and popstate)
+    // Final validation after VERSION_CONFIG is loaded
+    const initialPath = sessionStorage.getItem('initialPath');
+    if (initialPath) {
+        const validPaths = ['/argentina', '/chile', '/peru', '/colombia', '/mexico', '/football-players'];
+        
+        // Add VERSION_CONFIG paths dynamically (now it's available)
+        if (typeof VERSION_CONFIG !== 'undefined') {
+            Object.keys(VERSION_CONFIG).forEach(version => {
+                validPaths.push(`/${version}`);
+                validPaths.push(`/${version}/en`);
+                validPaths.push(`/${version}/es`);
+            });
+        }
+        
+        const isVersionPath = validPaths.some(validPath => initialPath.startsWith(validPath));
+        
+        if (initialPath !== '/' && !isVersionPath) {
+            // This path is invalid even after checking VERSION_CONFIG
+            sessionStorage.redirect = initialPath;
+            window.location.href = '/';
+            sessionStorage.removeItem('initialPath');
+            return;
+        }
+        
+        // If we get here, the path is valid, so we can use it
+        if (initialPath !== window.location.pathname) {
+            window.history.replaceState({}, '', initialPath);
+        }
+        sessionStorage.removeItem('initialPath');
+    }
 
+    // Get the current path from the browser's address bar (this works for both initial load and popstate)
     console.log("🔄 Handling URL:", window.location.pathname);
     console.log("VERSION_CONFIG keys:", Object.keys(VERSION_CONFIG));
-
 
     const path = window.location.pathname; // e.g., "/footballteams/en"
     
@@ -5098,9 +5127,6 @@ function handleUrlRouting() {
         // Path is like /version/lang
         versionPath = parts[0];
         lang = parts[1];
-
-
-        
     } else if (parts.length === 1) {
         // Path is just /version (default to a language)
         versionPath = parts[0];

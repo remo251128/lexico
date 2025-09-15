@@ -90,21 +90,18 @@
 -->
 
 <script>
-  // Only redirect if not on root AND not a valid version path
+  // Store the current path immediately
+  sessionStorage.setItem('initialPath', window.location.pathname);
+  
+  // Create a temporary list of known versions for quick initial check
+  const tempValidPaths = ['/argentina', '/chile', '/peru', '/colombia', '/mexico', '/football-players'];
+  
+  // Check if this is obviously an invalid path
   const path = window.location.pathname;
-  const validPaths = ['/argentina', '/chile', '/peru', '/colombia', '/mexico', '/football-players'];
+  const isObviouslyInvalid = !tempValidPaths.some(validPath => path.startsWith(validPath)) && path !== '/';
   
-  // ADD YOUR NEW VERSION PATHS HERE
-  const newVersionPaths = ['footballteams', 'malenames', 'femalenames', 'malenamesesp', 'femalenamesesp'];
-  newVersionPaths.forEach(version => {
-    validPaths.push(`/${version}`);
-    validPaths.push(`/${version}/en`);
-    validPaths.push(`/${version}/es`);
-  });
-  
-  const isVersionPath = validPaths.some(validPath => path.startsWith(validPath));
-  
-  if (path !== '/' && !isVersionPath) {
+  if (isObviouslyInvalid) {
+    // Redirect obviously invalid paths immediately
     sessionStorage.redirect = path;
     window.location.href = '/';
   }
@@ -425,11 +422,12 @@ EN COMENTARIO:
 
 //Ni bien se deploye a cloudflare o equivalente, ARREGLAR (check que se arregle en wordz.site):
 //no funciona sonido despues de refresh (compartiamiento audio extraño determinar problema exacto) (añadir antigua lienea mp3 en redirects?), sin alter other func (refresh url, re-enter url, enter url de frente)
-//SE SOLUCIONO EL REFRESH DE LAS VERSIONES VIEJAS (NO LAS NUEVAS QUE REDIRIGEN A AGRNEINTA/ES) SOLUCIONAR ESTO (ver que no se altere refresh viejas u otra func)
+//SE SOLUCIONO EL REFRESH DE LAS VERSIONES VIEJAS (NO LAS NUEVAS QUE REDIRIGEN A AGRNEINTA/ES) SOLUCIONAR ESTO (test por idioma, verion cel, etc) (ver que no se altere refresh viejas u otra func)
+//hay una solucion para este problema pero necesitaria añadir cada version en html de ahroa en adelante, tratar de impl la otr aversion que no lo necesita si es posbile y testear bien
 //Probar: refresh url, re-enter url, enter url de frente, back y next del y al juego  (que se muestre BIEN la pagina)
 //Ademas test scenarios like only version in url (igal behavior todas versiones), neither, incorrectas (debe redirigir) y correcta (debe cargar perf no como ahora)
 // y ver comportamiento Stats entrando a la pag de distintas formas
-//añadir una version directo al live version para ver si hay problemas y test toda la pagina real en pc y mobile
+//añadir una version directo al live version para ver si hay problemas y test toda la pagina real en pc y mobile (verificar que no se tenga que hardcodear en html)
 
 
 -->
