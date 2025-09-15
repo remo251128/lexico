@@ -5080,66 +5080,40 @@ const VERSION_CONFIG = {
 
 
 function handleUrlRouting() {
-    // Final validation after VERSION_CONFIG is loaded
-    const initialPath = sessionStorage.getItem('initialPath');
-    if (initialPath) {
-        const validPaths = ['/argentina', '/chile', '/peru', '/colombia', '/mexico', '/football-players'];
-        
-        // Add VERSION_CONFIG paths dynamically (now it's available)
-        if (typeof VERSION_CONFIG !== 'undefined') {
-            Object.keys(VERSION_CONFIG).forEach(version => {
-                validPaths.push(`/${version}`);
-                validPaths.push(`/${version}/en`);
-                validPaths.push(`/${version}/es`);
-            });
-        }
-        
-        const isVersionPath = validPaths.some(validPath => initialPath.startsWith(validPath));
-        
-        if (initialPath !== '/' && !isVersionPath) {
-            // This path is invalid even after checking VERSION_CONFIG
-            sessionStorage.redirect = initialPath;
-            window.location.href = '/';
-            sessionStorage.removeItem('initialPath');
-            return;
-        }
-        
-        // If we get here, the path is valid, so we can use it
-        if (initialPath !== window.location.pathname) {
-            window.history.replaceState({}, '', initialPath);
-        }
-        sessionStorage.removeItem('initialPath');
-    }
-
-    // Get the current path from the browser's address bar (this works for both initial load and popstate)
     console.log("🔄 Handling URL:", window.location.pathname);
     console.log("VERSION_CONFIG keys:", Object.keys(VERSION_CONFIG));
 
-    const path = window.location.pathname; // e.g., "/footballteams/en"
+    const path = window.location.pathname;
     
-    // Split the path into parts and filter out empty strings
+    // First, check if this is a redirect from an invalid path
+    const redirectedPath = sessionStorage.getItem('redirect');
+    if (redirectedPath && redirectedPath !== path) {
+        // We have a stored redirect path that doesn't match current URL
+        console.log("Redirecting from stored path:", redirectedPath);
+        window.history.replaceState({}, '', redirectedPath);
+        sessionStorage.removeItem('redirect');
+        // Restart processing with the correct URL
+        return handleUrlRouting();
+    }
+
     const parts = path.split('/').filter(p => p);
     
-    // Process the path parts to determine mode and language
     let versionPath, lang;
     
     if (parts.length >= 2) {
-        // Path is like /version/lang
         versionPath = parts[0];
         lang = parts[1];
     } else if (parts.length === 1) {
-        // Path is just /version (default to a language)
         versionPath = parts[0];
-        lang = 'es'; // Default language
+        lang = 'es';
     } else {
-        // Path is just / (root), default to Argentina Spanish
         currentCountry = 'argentina';
         currentLanguage = 'es';
         updateCountryUI();
         updateLanguage();
         newGame();
         sessionStorage.removeItem('redirect');
-        return; // Exit early for root path
+        return;
     }
     
     // 1. Set Language if valid
@@ -5153,7 +5127,6 @@ function handleUrlRouting() {
     
     // Check VERSION_CONFIG first (new system)
     for (const [versionId, config] of Object.entries(VERSION_CONFIG)) {
-        // Check if the path matches either the custom urlPath or the versionId
         const configPath = config.urlPath || versionId;
         if (versionPath === configPath) {
             currentCountry = versionId;
@@ -5177,10 +5150,23 @@ function handleUrlRouting() {
         versionFound = true;
     }
     
-    // 3. If no version was found from the path, default to Argentina
+    // 3. If no version was found from the path, check if it's a new version path
     if (!versionFound) {
-        currentCountry = 'argentina';
-        updateCountryUI();
+        // Check if this might be a valid new version path that we should keep
+        const mightBeNewVersion = !['argentina', 'chile', 'peru', 'colombia', 'mexico', 'football-players'].includes(versionPath);
+        
+        if (mightBeNewVersion) {
+            // This could be a new version path, don't redirect - let it be handled normally
+            console.log("Potential new version path:", versionPath);
+            // Default to Argentina but keep the URL intact
+            currentCountry = 'argentina';
+            updateCountryUI();
+        } else {
+            // Definitely invalid path, redirect to Argentina
+            sessionStorage.redirect = path;
+            window.location.href = '/argentina/es';
+            return;
+        }
     }
     
     // 4. Start a New Game with the new settings

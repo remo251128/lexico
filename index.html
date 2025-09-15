@@ -90,18 +90,12 @@
 -->
 
 <script>
-  // Store the current path immediately
-  sessionStorage.setItem('initialPath', window.location.pathname);
-  
-  // Create a temporary list of known versions for quick initial check
-  const tempValidPaths = ['/argentina', '/chile', '/peru', '/colombia', '/mexico', '/football-players'];
-  
-  // Check if this is obviously an invalid path
+  // Simple redirect for obviously invalid paths only
   const path = window.location.pathname;
-  const isObviouslyInvalid = !tempValidPaths.some(validPath => path.startsWith(validPath)) && path !== '/';
+  const obviouslyInvalid = path.includes('//') || path.includes('.php') || path.includes('.html') || 
+                          (path !== '/' && !path.includes('/') && path.length > 10);
   
-  if (isObviouslyInvalid) {
-    // Redirect obviously invalid paths immediately
+  if (obviouslyInvalid) {
     sessionStorage.redirect = path;
     window.location.href = '/';
   }
