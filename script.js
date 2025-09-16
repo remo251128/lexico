@@ -5290,70 +5290,88 @@ function getCorrectSoundPath(filename) {
 
 // Audio Manager with local files
 const AudioManager = {
-  sounds: {
-    move: null,
-    guess: null,
-    win: null,
-    loss: null
-  },
+  audioContext: null,
+  sounds: {},
+  isUnlocked: false,
   
   init() {
-    // Initialize sounds only if they haven't been initialized yet
-    if (!this.sounds.move) {
-      this.sounds.move = new Audio(getCorrectSoundPath('move.mp3'));
-      this.sounds.guess = new Audio(getCorrectSoundPath('guess.mp3'));
-      this.sounds.win = new Audio(getCorrectSoundPath('win.mp3'));
-      this.sounds.loss = new Audio(getCorrectSoundPath('loss.mp3'));
-      
-      Object.values(this.sounds).forEach(sound => {
-        sound.volume = 0.7;
-        sound.load();
-      });
+    // Initialize Web Audio API context
+    try {
+      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) {
+      console.error("Web Audio API not supported:", e);
+      return;
+    }
+    
+    // Try to unlock audio immediately
+    this.unlockAudio();
+  },
+  
+  async loadSound(url) {
+    if (!this.audioContext) return null;
+    
+    try {
+      const response = await fetch(url);
+      const arrayBuffer = await response.arrayBuffer();
+      const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+      return audioBuffer;
+    } catch (e) {
+      console.error("Error loading sound:", url, e);
+      return null;
     }
   },
   
-  play(soundName) {
-    // Ensure audio is initialized
-    this.init();
+  async play(soundName) {
+    // Ensure audio context is initialized
+    if (!this.audioContext) {
+      this.init();
+    }
+    
+    // If not unlocked, try to unlock
+    if (!this.isUnlocked) {
+      this.unlockAudio();
+    }
+    
+    const soundFile = getCorrectSoundPath(soundName + '.mp3');
     
     try {
-      if (this.sounds[soundName]) {
-        this.sounds[soundName].currentTime = 0;
-        this.sounds[soundName].play().catch(e => console.warn(soundName, e));
+      // Load and play the sound
+      const audioBuffer = await this.loadSound(soundFile);
+      if (audioBuffer && this.audioContext.state === 'running') {
+        const source = this.audioContext.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(this.audioContext.destination);
+        source.start(0);
       }
-    } catch(e) {
-      console.error("Audio error:", e);
+    } catch (e) {
+      console.warn("Could not play sound:", soundName, e);
+    }
+  },
+  
+  unlockAudio() {
+    if (!this.audioContext) return;
+    
+    // Create empty buffer and play it to unlock audio
+    const buffer = this.audioContext.createBuffer(1, 1, 22050);
+    const source = this.audioContext.createBufferSource();
+    source.buffer = buffer;
+    source.connect(this.audioContext.destination);
+    source.start(0);
+    
+    // Resume audio context if suspended
+    if (this.audioContext.state === 'suspended') {
+      this.audioContext.resume().then(() => {
+        this.isUnlocked = true;
+        console.log("Audio context unlocked");
+      }).catch(e => {
+        console.warn("Could not resume audio context:", e);
+      });
     }
   }
 };
 
 
 
-// Initialize on first user interaction
-function initAudio() {
-  // Only initialize once
-  if (!AudioManager.sounds.move) {
-    AudioManager.init();
-  }
-  
-  // Pre-load and attempt to play a silent sound to unlock audio
-  try {
-    const silentSound = new Audio('data:audio/wav;base64,UklGRnoAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoAAAC');
-    silentSound.volume = 0.0001;
-    silentSound.play().then(() => {
-      silentSound.pause();
-      console.log("Audio context unlocked");
-    }).catch(e => console.log("Silent sound play failed:", e));
-  } catch (e) {
-    console.log("Silent sound creation failed:", e);
-  }
-  
-  document.removeEventListener('click', initAudio);
-  document.removeEventListener('keydown', initAudio);
-}
-
-//document.addEventListener('click', initAudio);
-//document.addEventListener('keydown', initAudio);
 
 // Current game state
 let currentCountry = 'argentina';
@@ -5545,21 +5563,26 @@ function generateShareText() {
     */
 
 function init() {
-    loadStats();
-    setupEventListeners();
-    updateGameModesModal();
-    setupGameModeSelection();
-
-    initAudio();
-    
-    // Handle the initial URL the page was loaded with
-    handleUrlRouting();
-    
-    // Initialize URL after a slight delay to ensure everything is ready
-    // This ensures the URL bar reflects the initial state
-    setTimeout(() => {
-        updateUrl();
-    }, 50);
+  loadStats();
+  setupEventListeners();
+  updateGameModesModal();
+  setupGameModeSelection();
+  
+  // Initialize audio immediately with Web Audio API
+  AudioManager.init();
+  
+  // Set up user interaction to unlock audio
+  const unlockOnInteraction = () => {
+    AudioManager.unlockAudio();
+    document.removeEventListener('click', unlockOnInteraction);
+    document.removeEventListener('keydown', unlockOnInteraction);
+  };
+  
+  document.addEventListener('click', unlockOnInteraction);
+  document.addEventListener('keydown', unlockOnInteraction);
+  
+  handleUrlRouting();
+  setTimeout(() => updateUrl(), 50);
 }
 
 // Set up event listeners
@@ -6063,7 +6086,7 @@ function addLetter(letter) {
     if (currentGuess.length < 5) {
         currentGuess += letter;
         updateBoard();
-        AudioManager.play('move'); // Play move sound
+        AudioManager.play('move').catch(() => {});
     }
 }
 
@@ -6132,7 +6155,7 @@ function submitGuess() {
         return;
     }
 
-    AudioManager.play('guess');
+    AudioManager.play('guess').catch(() => {});
     guesses.push(currentGuess);
     updateBoardWithResult();
 
@@ -6282,7 +6305,7 @@ function gameWon() {
         gameOverModal.style.display = 'flex';
     }, 1000);
 
-    AudioManager.play('win');
+    AudioManager.play('win').catch(() => {});
     checkStreakCelebration();
 }
 
@@ -6306,7 +6329,7 @@ function gameLost() {
         gameOverModal.style.display = 'flex';
     }, 1000);
 
-    AudioManager.play('loss');
+    AudioManager.play('loss').catch(() => {});
 }
 
 
