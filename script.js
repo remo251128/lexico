@@ -5290,10 +5290,15 @@ function getCorrectSoundPath(filename) {
 
 // Audio Manager with local files
 const AudioManager = {
-  sounds: {},
+  sounds: {
+    move: null,
+    guess: null,
+    win: null,
+    loss: null
+  },
   
   init() {
-    // Only initialize if not already done
+    // Initialize sounds only if they haven't been initialized yet
     if (!this.sounds.move) {
       this.sounds.move = new Audio(getCorrectSoundPath('move.mp3'));
       this.sounds.guess = new Audio(getCorrectSoundPath('guess.mp3'));
@@ -5308,29 +5313,17 @@ const AudioManager = {
   },
   
   play(soundName) {
+    // Ensure audio is initialized
     this.init();
     
     try {
       if (this.sounds[soundName]) {
         this.sounds[soundName].currentTime = 0;
-        this.sounds[soundName].play().catch(e => {
-          console.warn(soundName, "play failed, attempting to unlock audio");
-          // This will trigger the unlock on next user interaction
-          document.addEventListener('click', this.unlockAudio.bind(this), { once: true });
-        });
+        this.sounds[soundName].play().catch(e => console.warn(soundName, e));
       }
     } catch(e) {
       console.error("Audio error:", e);
     }
-  },
-  
-  unlockAudio() {
-    // Try to play all sounds briefly to unlock them
-    Object.values(this.sounds).forEach(sound => {
-      try {
-        sound.play().then(() => sound.pause()).catch(e => {});
-      } catch(e) {}
-    });
   }
 };
 
@@ -5342,6 +5335,19 @@ function initAudio() {
   if (!AudioManager.sounds.move) {
     AudioManager.init();
   }
+  
+  // Pre-load and attempt to play a silent sound to unlock audio
+  try {
+    const silentSound = new Audio('data:audio/wav;base64,UklGRnoAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoAAAC');
+    silentSound.volume = 0.0001;
+    silentSound.play().then(() => {
+      silentSound.pause();
+      console.log("Audio context unlocked");
+    }).catch(e => console.log("Silent sound play failed:", e));
+  } catch (e) {
+    console.log("Silent sound creation failed:", e);
+  }
+  
   document.removeEventListener('click', initAudio);
   document.removeEventListener('keydown', initAudio);
 }
@@ -5539,26 +5545,21 @@ function generateShareText() {
     */
 
 function init() {
-  loadStats();
-  setupEventListeners();
-  updateGameModesModal();
-  setupGameModeSelection();
-  
-  // Initialize audio immediately
-  AudioManager.init();
-  
-  // Try to unlock audio automatically on page load
-  setTimeout(() => {
-    AudioManager.unlockAudio();
-  }, 1000);
-  
-  // Handle the initial URL the page was loaded with
-  handleUrlRouting();
-  
-  // Initialize URL after a slight delay to ensure everything is ready
-  setTimeout(() => {
-    updateUrl();
-  }, 50);
+    loadStats();
+    setupEventListeners();
+    updateGameModesModal();
+    setupGameModeSelection();
+
+    initAudio();
+    
+    // Handle the initial URL the page was loaded with
+    handleUrlRouting();
+    
+    // Initialize URL after a slight delay to ensure everything is ready
+    // This ensures the URL bar reflects the initial state
+    setTimeout(() => {
+        updateUrl();
+    }, 50);
 }
 
 // Set up event listeners
