@@ -5290,34 +5290,10 @@ function getCorrectSoundPath(filename) {
 
 // Audio Manager with local files
 const AudioManager = {
-  sounds: {
-    move: null,
-    guess: null,
-    win: null,
-    loss: null
-  },
+  sounds: {},
   
   init() {
-    // Try to restore audio elements from sessionStorage first
-    try {
-      const storedAudio = sessionStorage.getItem('audioElements');
-      if (storedAudio) {
-        const audioData = JSON.parse(storedAudio);
-        Object.keys(audioData).forEach(soundName => {
-          if (audioData[soundName]) {
-            const audio = new Audio(audioData[soundName]);
-            audio.volume = 0.7;
-            this.sounds[soundName] = audio;
-          }
-        });
-        console.log("Audio elements restored from sessionStorage");
-        return;
-      }
-    } catch (e) {
-      console.log("Could not restore audio from sessionStorage:", e);
-    }
-    
-    // Create new audio elements if not restored
+    // Only initialize if not already done
     if (!this.sounds.move) {
       this.sounds.move = new Audio(getCorrectSoundPath('move.mp3'));
       this.sounds.guess = new Audio(getCorrectSoundPath('guess.mp3'));
@@ -5328,44 +5304,33 @@ const AudioManager = {
         sound.volume = 0.7;
         sound.load();
       });
-      
-      // Store audio sources for restoration
-      this.storeAudioElements();
-    }
-  },
-  
-  storeAudioElements() {
-    try {
-      const audioData = {
-        move: getCorrectSoundPath('move.mp3'),
-        guess: getCorrectSoundPath('guess.mp3'),
-        win: getCorrectSoundPath('win.mp3'),
-        loss: getCorrectSoundPath('loss.mp3')
-      };
-      sessionStorage.setItem('audioElements', JSON.stringify(audioData));
-    } catch (e) {
-      console.log("Could not store audio elements:", e);
     }
   },
   
   play(soundName) {
-    // Ensure audio is initialized
     this.init();
     
     try {
       if (this.sounds[soundName]) {
         this.sounds[soundName].currentTime = 0;
         this.sounds[soundName].play().catch(e => {
-          console.warn(soundName, e);
-          // If playback fails, try to reinitialize audio
-          this.sounds[soundName] = new Audio(getCorrectSoundPath(soundName + '.mp3'));
-          this.sounds[soundName].volume = 0.7;
-          this.sounds[soundName].play().catch(e2 => console.warn("Retry failed:", e2));
+          console.warn(soundName, "play failed, attempting to unlock audio");
+          // This will trigger the unlock on next user interaction
+          document.addEventListener('click', this.unlockAudio.bind(this), { once: true });
         });
       }
     } catch(e) {
       console.error("Audio error:", e);
     }
+  },
+  
+  unlockAudio() {
+    // Try to play all sounds briefly to unlock them
+    Object.values(this.sounds).forEach(sound => {
+      try {
+        sound.play().then(() => sound.pause()).catch(e => {});
+      } catch(e) {}
+    });
   }
 };
 
@@ -5574,41 +5539,26 @@ function generateShareText() {
     */
 
 function init() {
-    loadStats();
-    setupEventListeners();
-    updateGameModesModal();
-    setupGameModeSelection();
-
-
-
-    AudioManager.init();
+  loadStats();
+  setupEventListeners();
+  updateGameModesModal();
+  setupGameModeSelection();
   
-  // Capture any early user interactions to unlock audio
-  const unlockAudio = () => {
-    // Try to play a silent sound to unlock audio context
-    try {
-      const silentSound = new Audio('data:audio/wav;base64,UklGRnoAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoAAAC');
-      silentSound.volume = 0.0001;
-      silentSound.play().then(() => silentSound.pause());
-    } catch (e) {}
-    
-    document.removeEventListener('click', unlockAudio);
-    document.removeEventListener('keydown', unlockAudio);
-  };
+  // Initialize audio immediately
+  AudioManager.init();
   
-  document.addEventListener('click', unlockAudio);
-  document.addEventListener('keydown', unlockAudio);
-
-
-    
-    // Handle the initial URL the page was loaded with
-    handleUrlRouting();
-    
-    // Initialize URL after a slight delay to ensure everything is ready
-    // This ensures the URL bar reflects the initial state
-    setTimeout(() => {
-        updateUrl();
-    }, 50);
+  // Try to unlock audio automatically on page load
+  setTimeout(() => {
+    AudioManager.unlockAudio();
+  }, 1000);
+  
+  // Handle the initial URL the page was loaded with
+  handleUrlRouting();
+  
+  // Initialize URL after a slight delay to ensure everything is ready
+  setTimeout(() => {
+    updateUrl();
+  }, 50);
 }
 
 // Set up event listeners
