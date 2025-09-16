@@ -5290,32 +5290,81 @@ function getCorrectSoundPath(filename) {
 
 // Audio Manager with local files
 const AudioManager = {
-  // 2. MODIFY paths to use the corrector
   sounds: {
-    move: new Audio(getCorrectSoundPath('move.mp3')),
-    guess: new Audio(getCorrectSoundPath('guess.mp3')),
-    win: new Audio(getCorrectSoundPath('win.mp3')),
-    loss: new Audio(getCorrectSoundPath('loss.mp3'))
+    move: null,
+    guess: null,
+    win: null,
+    loss: null
   },
   
   init() {
-    Object.values(this.sounds).forEach(sound => {
-      sound.volume = 0.7;
-      sound.load();
-    });
+    // Try to restore audio elements from sessionStorage first
+    try {
+      const storedAudio = sessionStorage.getItem('audioElements');
+      if (storedAudio) {
+        const audioData = JSON.parse(storedAudio);
+        Object.keys(audioData).forEach(soundName => {
+          if (audioData[soundName]) {
+            const audio = new Audio(audioData[soundName]);
+            audio.volume = 0.7;
+            this.sounds[soundName] = audio;
+          }
+        });
+        console.log("Audio elements restored from sessionStorage");
+        return;
+      }
+    } catch (e) {
+      console.log("Could not restore audio from sessionStorage:", e);
+    }
+    
+    // Create new audio elements if not restored
+    if (!this.sounds.move) {
+      this.sounds.move = new Audio(getCorrectSoundPath('move.mp3'));
+      this.sounds.guess = new Audio(getCorrectSoundPath('guess.mp3'));
+      this.sounds.win = new Audio(getCorrectSoundPath('win.mp3'));
+      this.sounds.loss = new Audio(getCorrectSoundPath('loss.mp3'));
+      
+      Object.values(this.sounds).forEach(sound => {
+        sound.volume = 0.7;
+        sound.load();
+      });
+      
+      // Store audio sources for restoration
+      this.storeAudioElements();
+    }
+  },
+  
+  storeAudioElements() {
+    try {
+      const audioData = {
+        move: getCorrectSoundPath('move.mp3'),
+        guess: getCorrectSoundPath('guess.mp3'),
+        win: getCorrectSoundPath('win.mp3'),
+        loss: getCorrectSoundPath('loss.mp3')
+      };
+      sessionStorage.setItem('audioElements', JSON.stringify(audioData));
+    } catch (e) {
+      console.log("Could not store audio elements:", e);
+    }
   },
   
   play(soundName) {
-    // 3. ADD this error catch
+    // Ensure audio is initialized
+    this.init();
+    
     try {
-      this.sounds[soundName].currentTime = 0;
-      this.sounds[soundName].play().catch(e => console.warn(soundName, e));
+      if (this.sounds[soundName]) {
+        this.sounds[soundName].currentTime = 0;
+        this.sounds[soundName].play().catch(e => {
+          console.warn(soundName, e);
+          // If playback fails, try to reinitialize audio
+          this.sounds[soundName] = new Audio(getCorrectSoundPath(soundName + '.mp3'));
+          this.sounds[soundName].volume = 0.7;
+          this.sounds[soundName].play().catch(e2 => console.warn("Retry failed:", e2));
+        });
+      }
     } catch(e) {
       console.error("Audio error:", e);
-      // 4. ADD silent retry for Chrome
-      document.addEventListener('click', () => {
-        this.sounds[soundName].play();
-      }, { once: true });
     }
   }
 };
@@ -5332,8 +5381,8 @@ function initAudio() {
   document.removeEventListener('keydown', initAudio);
 }
 
-document.addEventListener('click', initAudio);
-document.addEventListener('keydown', initAudio);
+//document.addEventListener('click', initAudio);
+//document.addEventListener('keydown', initAudio);
 
 // Current game state
 let currentCountry = 'argentina';
@@ -5529,6 +5578,28 @@ function init() {
     setupEventListeners();
     updateGameModesModal();
     setupGameModeSelection();
+
+
+
+    AudioManager.init();
+  
+  // Capture any early user interactions to unlock audio
+  const unlockAudio = () => {
+    // Try to play a silent sound to unlock audio context
+    try {
+      const silentSound = new Audio('data:audio/wav;base64,UklGRnoAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoAAAC');
+      silentSound.volume = 0.0001;
+      silentSound.play().then(() => silentSound.pause());
+    } catch (e) {}
+    
+    document.removeEventListener('click', unlockAudio);
+    document.removeEventListener('keydown', unlockAudio);
+  };
+  
+  document.addEventListener('click', unlockAudio);
+  document.addEventListener('keydown', unlockAudio);
+
+
     
     // Handle the initial URL the page was loaded with
     handleUrlRouting();
