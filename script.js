@@ -5290,31 +5290,40 @@ function getCorrectSoundPath(filename) {
 
 // Audio Manager with local files
 const AudioManager = {
-  audioElement: null,
-  currentSound: null,
+  sounds: {},
+  isInitialized: false,
   
   init() {
-    // Create just ONE audio element that persists across refreshes
-    if (!this.audioElement) {
-      this.audioElement = new Audio();
-      this.audioElement.volume = 0.7;
-    }
+    if (this.isInitialized) return;
+    
+    this.sounds.move = new Audio('sounds/move.mp3');
+    this.sounds.guess = new Audio('sounds/guess.mp3');
+    this.sounds.win = new Audio('sounds/win.mp3');
+    this.sounds.loss = new Audio('sounds/loss.mp3');
+    
+    // Pre-load all sounds
+    Object.values(this.sounds).forEach(sound => {
+      sound.volume = 0.7;
+      sound.preload = 'auto';
+      sound.load();
+    });
+    
+    this.isInitialized = true;
   },
   
   play(soundName) {
-    this.init();
+    // Initialize if not done yet
+    if (!this.isInitialized) {
+      this.init();
+    }
     
     try {
-      // Stop any currently playing sound
-      this.audioElement.pause();
-      this.audioElement.currentTime = 0;
-      
-      // Change the source and play
-      this.audioElement.src = getCorrectSoundPath(soundName + '.mp3');
-      this.audioElement.play().catch(e => {
-        console.warn(soundName, "play failed:", e);
-        // Audio will work after user interaction
-      });
+      if (this.sounds[soundName]) {
+        this.sounds[soundName].currentTime = 0;
+        this.sounds[soundName].play().catch(e => {
+          console.warn(soundName, "play failed - will work after user interaction");
+        });
+      }
     } catch(e) {
       console.error("Audio error:", e);
     }
@@ -5531,28 +5540,27 @@ function init() {
   updateGameModesModal();
   setupGameModeSelection();
   
-  // Initialize audio
+  // Initialize audio immediately but don't try to play yet
   AudioManager.init();
   
-  // Capture ANY user interaction to unlock audio
+  // Set up a one-time interaction handler to unlock audio
   const unlockAudio = () => {
-    // Try to play a silent sound to unlock audio
+    // Try to play a tiny silent audio to unlock the audio context
     try {
-      const silentSound = new Audio('data:audio/wav;base64,UklGRnoAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoAAAC');
-      silentSound.volume = 0.001;
-      silentSound.play().then(() => {
-        silentSound.pause();
-        console.log("Audio unlocked");
-      }).catch(e => {});
+      const silentAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAA');
+      silentAudio.volume = 0.001;
+      silentAudio.play().then(() => {
+        silentAudio.pause();
+      }).catch(() => {});
     } catch(e) {}
     
-    // Remove listeners after first interaction
+    // Remove listeners after first successful interaction
     document.removeEventListener('click', unlockAudio);
     document.removeEventListener('keydown', unlockAudio);
     document.removeEventListener('touchstart', unlockAudio);
   };
   
-  // Set up listeners for any user interaction
+  // Listen for any user interaction
   document.addEventListener('click', unlockAudio);
   document.addEventListener('keydown', unlockAudio);
   document.addEventListener('touchstart', unlockAudio);
