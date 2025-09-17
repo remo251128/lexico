@@ -7,18 +7,6 @@ and English (en) versions. When adding new UI elements:
 3. Update the updateLanguage() function to handle the new text elements
 */
 
-if (typeof AudioManager !== 'undefined') {
-  AudioManager = {
-    play(soundName) {
-      try {
-        const sound = new Audio(`/sounds/${soundName}.mp3?t=${Date.now()}`);
-        sound.volume = 0.7;
-        sound.play().catch(() => {});
-      } catch(e) {}
-    }
-  };
-}
-
 const LANGUAGES = {
     es: {
         unlimitedAttempts: "Intentos ilimitados",
@@ -5304,15 +5292,31 @@ function getCorrectSoundPath(filename) {
 const AudioManager = {
   play(soundName) {
     try {
-      // Absolute URL with cache buster
-      const sound = new Audio(`/sounds/${soundName}.mp3?t=${Date.now()}`);
+      // Use absolute path to avoid any path issues
+      const sound = new Audio(window.location.origin + '/sounds/' + soundName + '.mp3');
       sound.volume = 0.7;
-      sound.play().catch(() => {}); // Silent catch
-    } catch(e) {}
+      sound.play().catch(e => console.log(soundName + ' play failed (will work after interaction)'));
+    } catch(e) {
+      console.error('Audio error:', e);
+    }
   }
 };
 
+/*
 
+// Initialize on first user interaction
+function initAudio() {
+  // Only initialize once
+  if (!AudioManager.sounds.move) {
+    AudioManager.init();
+  }
+  document.removeEventListener('click', initAudio);
+  document.removeEventListener('keydown', initAudio);
+}
+
+document.addEventListener('click', initAudio);
+document.addEventListener('keydown', initAudio);
+*/
 // Current game state
 let currentCountry = 'argentina';
 let word = '';
