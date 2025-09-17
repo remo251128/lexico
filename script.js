@@ -5290,38 +5290,22 @@ function getCorrectSoundPath(filename) {
 
 // Audio Manager with local files
 const AudioManager = {
-  // 2. MODIFY paths to use the corrector
-  sounds: {
-    move: new Audio(getCorrectSoundPath('move.mp3')),
-    guess: new Audio(getCorrectSoundPath('guess.mp3')),
-    win: new Audio(getCorrectSoundPath('win.mp3')),
-    loss: new Audio(getCorrectSoundPath('loss.mp3'))
-  },
-  
-  init() {
-    Object.values(this.sounds).forEach(sound => {
-      sound.volume = 0.7;
-      sound.load();
-    });
-  },
-  
   play(soundName) {
-    // 3. ADD this error catch
     try {
-      this.sounds[soundName].currentTime = 0;
-      this.sounds[soundName].play().catch(e => console.warn(soundName, e));
+      // Create new audio element every time - no zombie state
+      const sound = new Audio('sounds/' + soundName + '.mp3');
+      sound.volume = 0.7;
+      sound.play().catch(e => {
+        console.warn(soundName, 'will work after user interaction');
+      });
     } catch(e) {
-      console.error("Audio error:", e);
-      // 4. ADD silent retry for Chrome
-      document.addEventListener('click', () => {
-        this.sounds[soundName].play();
-      }, { once: true });
+      console.error('Audio error:', e);
     }
   }
 };
 
 
-
+/*
 // Initialize on first user interaction
 function initAudio() {
   // Only initialize once
@@ -5334,7 +5318,7 @@ function initAudio() {
 
 document.addEventListener('click', initAudio);
 document.addEventListener('keydown', initAudio);
-
+*/
 // Current game state
 let currentCountry = 'argentina';
 let word = '';
