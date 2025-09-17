@@ -5290,32 +5290,33 @@ function getCorrectSoundPath(filename) {
 
 // Audio Manager with local files
 const AudioManager = {
-  // 2. MODIFY paths to use the corrector
-  sounds: {
-    move: new Audio(getCorrectSoundPath('move.mp3')),
-    guess: new Audio(getCorrectSoundPath('guess.mp3')),
-    win: new Audio(getCorrectSoundPath('win.mp3')),
-    loss: new Audio(getCorrectSoundPath('loss.mp3'))
-  },
+  audioElement: null,
+  currentSound: null,
   
   init() {
-    Object.values(this.sounds).forEach(sound => {
-      sound.volume = 0.7;
-      sound.load();
-    });
+    // Create just ONE audio element that persists across refreshes
+    if (!this.audioElement) {
+      this.audioElement = new Audio();
+      this.audioElement.volume = 0.7;
+    }
   },
   
   play(soundName) {
-    // 3. ADD this error catch
+    this.init();
+    
     try {
-      this.sounds[soundName].currentTime = 0;
-      this.sounds[soundName].play().catch(e => console.warn(soundName, e));
+      // Stop any currently playing sound
+      this.audioElement.pause();
+      this.audioElement.currentTime = 0;
+      
+      // Change the source and play
+      this.audioElement.src = getCorrectSoundPath(soundName + '.mp3');
+      this.audioElement.play().catch(e => {
+        console.warn(soundName, "play failed:", e);
+        // Audio will work after user interaction
+      });
     } catch(e) {
       console.error("Audio error:", e);
-      // 4. ADD silent retry for Chrome
-      document.addEventListener('click', () => {
-        this.sounds[soundName].play();
-      }, { once: true });
     }
   }
 };
@@ -5525,19 +5526,39 @@ function generateShareText() {
     */
 
 function init() {
-    loadStats();
-    setupEventListeners();
-    updateGameModesModal();
-    setupGameModeSelection();
+  loadStats();
+  setupEventListeners();
+  updateGameModesModal();
+  setupGameModeSelection();
+  
+  // Initialize audio
+  AudioManager.init();
+  
+  // Capture ANY user interaction to unlock audio
+  const unlockAudio = () => {
+    // Try to play a silent sound to unlock audio
+    try {
+      const silentSound = new Audio('data:audio/wav;base64,UklGRnoAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoAAAC');
+      silentSound.volume = 0.001;
+      silentSound.play().then(() => {
+        silentSound.pause();
+        console.log("Audio unlocked");
+      }).catch(e => {});
+    } catch(e) {}
     
-    // Handle the initial URL the page was loaded with
-    handleUrlRouting();
-    
-    // Initialize URL after a slight delay to ensure everything is ready
-    // This ensures the URL bar reflects the initial state
-    setTimeout(() => {
-        updateUrl();
-    }, 50);
+    // Remove listeners after first interaction
+    document.removeEventListener('click', unlockAudio);
+    document.removeEventListener('keydown', unlockAudio);
+    document.removeEventListener('touchstart', unlockAudio);
+  };
+  
+  // Set up listeners for any user interaction
+  document.addEventListener('click', unlockAudio);
+  document.addEventListener('keydown', unlockAudio);
+  document.addEventListener('touchstart', unlockAudio);
+  
+  handleUrlRouting();
+  setTimeout(() => updateUrl(), 50);
 }
 
 // Set up event listeners
