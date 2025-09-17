@@ -5290,37 +5290,32 @@ function getCorrectSoundPath(filename) {
 
 // Audio Manager with local files
 const AudioManager = {
-  sounds: {},
+  // 2. MODIFY paths to use the corrector
+  sounds: {
+    move: new Audio(getCorrectSoundPath('move.mp3')),
+    guess: new Audio(getCorrectSoundPath('guess.mp3')),
+    win: new Audio(getCorrectSoundPath('win.mp3')),
+    loss: new Audio(getCorrectSoundPath('loss.mp3'))
+  },
   
   init() {
-    this.sounds.move = new Howl({
-      src: ['sounds/move.mp3'],
-      volume: 0.7,
-      preload: true
-    });
-    
-    this.sounds.guess = new Howl({
-      src: ['sounds/guess.mp3'],
-      volume: 0.7,
-      preload: true
-    });
-    
-    this.sounds.win = new Howl({
-      src: ['sounds/win.mp3'], 
-      volume: 0.7,
-      preload: true
-    });
-    
-    this.sounds.loss = new Howl({
-      src: ['sounds/loss.mp3'],
-      volume: 0.7, 
-      preload: true
+    Object.values(this.sounds).forEach(sound => {
+      sound.volume = 0.7;
+      sound.load();
     });
   },
   
   play(soundName) {
-    if (this.sounds[soundName]) {
-      this.sounds[soundName].play();
+    // 3. ADD this error catch
+    try {
+      this.sounds[soundName].currentTime = 0;
+      this.sounds[soundName].play().catch(e => console.warn(soundName, e));
+    } catch(e) {
+      console.error("Audio error:", e);
+      // 4. ADD silent retry for Chrome
+      document.addEventListener('click', () => {
+        this.sounds[soundName].play();
+      }, { once: true });
     }
   }
 };
@@ -5534,8 +5529,6 @@ function init() {
     setupEventListeners();
     updateGameModesModal();
     setupGameModeSelection();
-
-    AudioManager.init();
     
     // Handle the initial URL the page was loaded with
     handleUrlRouting();
