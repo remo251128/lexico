@@ -5292,12 +5292,15 @@ function getCorrectSoundPath(filename) {
 const AudioManager = {
   play(soundName) {
     try {
-      // Create new audio element every time - no zombie state
-      const sound = new Audio('sounds/' + soundName + '.mp3');
+      // Add cache buster to force fresh load
+      const timestamp = new Date().getTime();
+      const sound = new Audio(`sounds/${soundName}.mp3?t=${timestamp}`);
       sound.volume = 0.7;
+      
       sound.play().catch(e => {
-        console.warn(soundName, 'will work after user interaction');
+        console.warn(soundName, 'play failed');
       });
+      
     } catch(e) {
       console.error('Audio error:', e);
     }
@@ -5305,7 +5308,7 @@ const AudioManager = {
 };
 
 
-/*
+
 // Initialize on first user interaction
 function initAudio() {
   // Only initialize once
@@ -5318,7 +5321,7 @@ function initAudio() {
 
 document.addEventListener('click', initAudio);
 document.addEventListener('keydown', initAudio);
-*/
+
 // Current game state
 let currentCountry = 'argentina';
 let word = '';
