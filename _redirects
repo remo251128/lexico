@@ -1,5 +1,5 @@
 /*               /index.html   200
 /*.css           /styles.css   200
 /*.js            /script.js    200
-/*.mp3   200    Header=Accept-Ranges: bytes    Header=Access-Control-Allow-Origin: *
+/sounds/*.mp3   200    Header=Accept-Ranges: bytes    Header=Access-Control-Allow-Origin: *
 
