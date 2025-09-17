@@ -5290,12 +5290,25 @@ function getCorrectSoundPath(filename) {
 
 // Audio Manager with local files
 const AudioManager = {
+  // Base64 encoded silent audio fallback
+  createAudio() {
+    const audio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAA');
+    audio.volume = 0.7;
+    return audio;
+  },
+  
   play(soundName) {
     try {
-      // Add cache buster to force fresh load
-      const timestamp = new Date().getTime();
-      const sound = new Audio(`sounds/${soundName}.mp3?t=${timestamp}`);
+      // Try external file first
+      const sound = new Audio(`sounds/${soundName}.mp3`);
       sound.volume = 0.7;
+      
+      // If external file fails, fall back to base64
+      sound.onerror = () => {
+        console.warn(`${soundName}.mp3 failed, using fallback`);
+        const fallback = this.createAudio();
+        fallback.play().catch(() => {});
+      };
       
       sound.play().catch(e => {
         console.warn(soundName, 'play failed');
@@ -5303,6 +5316,8 @@ const AudioManager = {
       
     } catch(e) {
       console.error('Audio error:', e);
+      // Ultimate fallback
+      this.createAudio().play().catch(() => {});
     }
   }
 };
