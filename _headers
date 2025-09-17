@@ -1,7 +1,2 @@
 /*.mp3
-  Accept-Ranges: bytes
-  Access-Control-Allow-Origin: *
-
-/sounds/*.mp3
-  Accept-Ranges: bytes  
-  Access-Control-Allow-Origin: *
+  Accept-Ranges: none
