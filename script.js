@@ -5290,17 +5290,77 @@ function getCorrectSoundPath(filename) {
 
 // Audio Manager with local files
 const AudioManager = {
-  play(soundName) {
+  audioContext: null,
+  buffers: {},
+  
+  init() {
     try {
-      const timestamp = new Date().getTime();
-      const sound = new Audio(`sounds/${soundName}.mp3?t=${timestamp}`);
-      sound.volume = 0.7;
-      sound.play().catch(e => console.warn(soundName, 'play failed'));
+      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
     } catch(e) {
-      console.error('Audio error:', e);
+      console.error('Web Audio API not supported:', e);
     }
+  },
+  
+  play(soundName) {
+    if (!this.audioContext) {
+      this.init();
+    }
+    
+    // Create a simple beep sound programmatically as fallback
+    if (!this.audioContext || this.audioContext.state !== 'running') {
+      this.playFallbackBeep();
+      return;
+    }
+    
+    try {
+      // Try to play the external sound
+      this.playExternalSound(soundName);
+    } catch(e) {
+      console.warn('External sound failed, using fallback:', e);
+      this.playFallbackBeep();
+    }
+  },
+  
+  async playExternalSound(soundName) {
+    try {
+      const response = await fetch(`sounds/${soundName}.mp3`);
+      const arrayBuffer = await response.arrayBuffer();
+      const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+      
+      const source = this.audioContext.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(this.audioContext.destination);
+      source.start(0);
+    } catch(e) {
+      throw e;
+    }
+  },
+  
+  playFallbackBeep() {
+    if (!this.audioContext) return;
+    
+    // Create a simple beep sound
+    const oscillator = this.audioContext.createOscillator();
+    const gainNode = this.audioContext.createGain();
+    
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime);
+    gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(this.audioContext.destination);
+    
+    oscillator.start();
+    oscillator.stop(this.audioContext.currentTime + 0.1);
   }
 };
+
+// Initialize on first user interaction
+document.addEventListener('click', () => {
+  if (!AudioManager.audioContext) {
+    AudioManager.init();
+  }
+}, { once: true });
 
 /*
 // Initialize on first user interaction
