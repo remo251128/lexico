@@ -5339,20 +5339,7 @@ const AudioManager = {
   }
 };
 
-/*
-// Initialize on first user interaction
-function initAudio() {
-  // Only initialize once
-  if (!AudioManager.sounds.move) {
-    AudioManager.init();
-  }
-  document.removeEventListener('click', initAudio);
-  document.removeEventListener('keydown', initAudio);
-}
 
-document.addEventListener('click', initAudio);
-document.addEventListener('keydown', initAudio);
-*/
 // Current game state
 let currentCountry = 'argentina';
 let word = '';
