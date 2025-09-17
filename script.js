@@ -5290,42 +5290,30 @@ function getCorrectSoundPath(filename) {
 
 // Audio Manager with local files
 const AudioManager = {
-  sounds: {},
-  isInitialized: false,
-  
-  init() {
-    if (this.isInitialized) return;
-    
-    this.sounds.move = new Audio('sounds/move.mp3');
-    this.sounds.guess = new Audio('sounds/guess.mp3');
-    this.sounds.win = new Audio('sounds/win.mp3');
-    this.sounds.loss = new Audio('sounds/loss.mp3');
-    
-    // Pre-load all sounds
-    Object.values(this.sounds).forEach(sound => {
-      sound.volume = 0.7;
-      sound.preload = 'auto';
-      sound.load();
-    });
-    
-    this.isInitialized = true;
-  },
-  
+  // No pre-initialization, create audio elements on-demand
   play(soundName) {
-    // Initialize if not done yet
-    if (!this.isInitialized) {
-      this.init();
-    }
-    
     try {
-      if (this.sounds[soundName]) {
-        this.sounds[soundName].currentTime = 0;
-        this.sounds[soundName].play().catch(e => {
-          console.warn(soundName, "play failed - will work after user interaction");
-        });
-      }
+      // Create a NEW audio element each time - this bypasses the refresh issue
+      const sound = new Audio(`sounds/${soundName}.mp3`);
+      sound.volume = 0.7;
+      
+      // Try to play immediately
+      sound.play().catch(e => {
+        console.log(soundName, 'will work after user interaction');
+        
+        // Set up a one-time play on next user interaction
+        const playOnInteraction = () => {
+          sound.play().catch(e => {});
+          document.removeEventListener('click', playOnInteraction);
+          document.removeEventListener('keydown', playOnInteraction);
+        };
+        
+        document.addEventListener('click', playOnInteraction);
+        document.addEventListener('keydown', playOnInteraction);
+      });
+      
     } catch(e) {
-      console.error("Audio error:", e);
+      console.error('Audio error:', e);
     }
   }
 };
@@ -5535,38 +5523,19 @@ function generateShareText() {
     */
 
 function init() {
-  loadStats();
-  setupEventListeners();
-  updateGameModesModal();
-  setupGameModeSelection();
-  
-  // Initialize audio immediately but don't try to play yet
-  AudioManager.init();
-  
-  // Set up a one-time interaction handler to unlock audio
-  const unlockAudio = () => {
-    // Try to play a tiny silent audio to unlock the audio context
-    try {
-      const silentAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAA');
-      silentAudio.volume = 0.001;
-      silentAudio.play().then(() => {
-        silentAudio.pause();
-      }).catch(() => {});
-    } catch(e) {}
+    loadStats();
+    setupEventListeners();
+    updateGameModesModal();
+    setupGameModeSelection();
     
-    // Remove listeners after first successful interaction
-    document.removeEventListener('click', unlockAudio);
-    document.removeEventListener('keydown', unlockAudio);
-    document.removeEventListener('touchstart', unlockAudio);
-  };
-  
-  // Listen for any user interaction
-  document.addEventListener('click', unlockAudio);
-  document.addEventListener('keydown', unlockAudio);
-  document.addEventListener('touchstart', unlockAudio);
-  
-  handleUrlRouting();
-  setTimeout(() => updateUrl(), 50);
+    // Handle the initial URL the page was loaded with
+    handleUrlRouting();
+    
+    // Initialize URL after a slight delay to ensure everything is ready
+    // This ensures the URL bar reflects the initial state
+    setTimeout(() => {
+        updateUrl();
+    }, 50);
 }
 
 // Set up event listeners
