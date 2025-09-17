@@ -5290,88 +5290,50 @@ function getCorrectSoundPath(filename) {
 
 // Audio Manager with local files
 const AudioManager = {
-  audioContext: null,
-  sounds: {},
-  isUnlocked: false,
+  // 2. MODIFY paths to use the corrector
+  sounds: {
+    move: new Audio(getCorrectSoundPath('move.mp3')),
+    guess: new Audio(getCorrectSoundPath('guess.mp3')),
+    win: new Audio(getCorrectSoundPath('win.mp3')),
+    loss: new Audio(getCorrectSoundPath('loss.mp3'))
+  },
   
   init() {
-    // Initialize Web Audio API context
-    try {
-      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    } catch (e) {
-      console.error("Web Audio API not supported:", e);
-      return;
-    }
-    
-    // Try to unlock audio immediately
-    this.unlockAudio();
+    Object.values(this.sounds).forEach(sound => {
+      sound.volume = 0.7;
+      sound.load();
+    });
   },
   
-  async loadSound(url) {
-    if (!this.audioContext) return null;
-    
+  play(soundName) {
+    // 3. ADD this error catch
     try {
-      const response = await fetch(url);
-      const arrayBuffer = await response.arrayBuffer();
-      const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-      return audioBuffer;
-    } catch (e) {
-      console.error("Error loading sound:", url, e);
-      return null;
-    }
-  },
-  
-  async play(soundName) {
-    // Ensure audio context is initialized
-    if (!this.audioContext) {
-      this.init();
-    }
-    
-    // If not unlocked, try to unlock
-    if (!this.isUnlocked) {
-      this.unlockAudio();
-    }
-    
-    const soundFile = getCorrectSoundPath(soundName + '.mp3');
-    
-    try {
-      // Load and play the sound
-      const audioBuffer = await this.loadSound(soundFile);
-      if (audioBuffer && this.audioContext.state === 'running') {
-        const source = this.audioContext.createBufferSource();
-        source.buffer = audioBuffer;
-        source.connect(this.audioContext.destination);
-        source.start(0);
-      }
-    } catch (e) {
-      console.warn("Could not play sound:", soundName, e);
-    }
-  },
-  
-  unlockAudio() {
-    if (!this.audioContext) return;
-    
-    // Create empty buffer and play it to unlock audio
-    const buffer = this.audioContext.createBuffer(1, 1, 22050);
-    const source = this.audioContext.createBufferSource();
-    source.buffer = buffer;
-    source.connect(this.audioContext.destination);
-    source.start(0);
-    
-    // Resume audio context if suspended
-    if (this.audioContext.state === 'suspended') {
-      this.audioContext.resume().then(() => {
-        this.isUnlocked = true;
-        console.log("Audio context unlocked");
-      }).catch(e => {
-        console.warn("Could not resume audio context:", e);
-      });
+      this.sounds[soundName].currentTime = 0;
+      this.sounds[soundName].play().catch(e => console.warn(soundName, e));
+    } catch(e) {
+      console.error("Audio error:", e);
+      // 4. ADD silent retry for Chrome
+      document.addEventListener('click', () => {
+        this.sounds[soundName].play();
+      }, { once: true });
     }
   }
 };
 
 
 
+// Initialize on first user interaction
+function initAudio() {
+  // Only initialize once
+  if (!AudioManager.sounds.move) {
+    AudioManager.init();
+  }
+  document.removeEventListener('click', initAudio);
+  document.removeEventListener('keydown', initAudio);
+}
+
+document.addEventListener('click', initAudio);
+document.addEventListener('keydown', initAudio);
 
 // Current game state
 let currentCountry = 'argentina';
@@ -5563,26 +5525,19 @@ function generateShareText() {
     */
 
 function init() {
-  loadStats();
-  setupEventListeners();
-  updateGameModesModal();
-  setupGameModeSelection();
-  
-  // Initialize audio immediately with Web Audio API
-  AudioManager.init();
-  
-  // Set up user interaction to unlock audio
-  const unlockOnInteraction = () => {
-    AudioManager.unlockAudio();
-    document.removeEventListener('click', unlockOnInteraction);
-    document.removeEventListener('keydown', unlockOnInteraction);
-  };
-  
-  document.addEventListener('click', unlockOnInteraction);
-  document.addEventListener('keydown', unlockOnInteraction);
-  
-  handleUrlRouting();
-  setTimeout(() => updateUrl(), 50);
+    loadStats();
+    setupEventListeners();
+    updateGameModesModal();
+    setupGameModeSelection();
+    
+    // Handle the initial URL the page was loaded with
+    handleUrlRouting();
+    
+    // Initialize URL after a slight delay to ensure everything is ready
+    // This ensures the URL bar reflects the initial state
+    setTimeout(() => {
+        updateUrl();
+    }, 50);
 }
 
 // Set up event listeners
@@ -6086,7 +6041,7 @@ function addLetter(letter) {
     if (currentGuess.length < 5) {
         currentGuess += letter;
         updateBoard();
-        AudioManager.play('move').catch(() => {});
+        AudioManager.play('move'); // Play move sound
     }
 }
 
@@ -6155,7 +6110,7 @@ function submitGuess() {
         return;
     }
 
-    AudioManager.play('guess').catch(() => {});
+    AudioManager.play('guess');
     guesses.push(currentGuess);
     updateBoardWithResult();
 
@@ -6305,7 +6260,7 @@ function gameWon() {
         gameOverModal.style.display = 'flex';
     }, 1000);
 
-    AudioManager.play('win').catch(() => {});
+    AudioManager.play('win');
     checkStreakCelebration();
 }
 
@@ -6329,7 +6284,7 @@ function gameLost() {
         gameOverModal.style.display = 'flex';
     }, 1000);
 
-    AudioManager.play('loss').catch(() => {});
+    AudioManager.play('loss');
 }
 
 
