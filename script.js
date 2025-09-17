@@ -5290,77 +5290,54 @@ function getCorrectSoundPath(filename) {
 
 // Audio Manager with local files
 const AudioManager = {
-  audioContext: null,
-  buffers: {},
-  
-  init() {
-    try {
-      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    } catch(e) {
-      console.error('Web Audio API not supported:', e);
-    }
-  },
-  
   play(soundName) {
-    if (!this.audioContext) {
-      this.init();
-    }
+    console.log('=== AUDIO DEBUG ===');
+    console.log('Attempting to play:', soundName);
     
-    // Create a simple beep sound programmatically as fallback
-    if (!this.audioContext || this.audioContext.state !== 'running') {
-      this.playFallbackBeep();
-      return;
-    }
+    const soundUrl = `sounds/${soundName}.mp3`;
+    console.log('Sound URL:', soundUrl);
     
-    try {
-      // Try to play the external sound
-      this.playExternalSound(soundName);
-    } catch(e) {
-      console.warn('External sound failed, using fallback:', e);
-      this.playFallbackBeep();
-    }
+    // Test if the file actually exists and is accessible
+    fetch(soundUrl, { method: 'HEAD' })
+      .then(response => {
+        console.log('HTTP Status:', response.status, response.statusText);
+        console.log('Content-Type:', response.headers.get('Content-Type'));
+        console.log('Content-Length:', response.headers.get('Content-Length'));
+        
+        if (response.ok) {
+          this.attemptPlay(soundUrl, soundName);
+        } else {
+          console.error('File not found or inaccessible');
+        }
+      })
+      .catch(error => {
+        console.error('Fetch error:', error);
+      });
   },
   
-  async playExternalSound(soundName) {
-    try {
-      const response = await fetch(`sounds/${soundName}.mp3`);
-      const arrayBuffer = await response.arrayBuffer();
-      const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-      
-      const source = this.audioContext.createBufferSource();
-      source.buffer = audioBuffer;
-      source.connect(this.audioContext.destination);
-      source.start(0);
-    } catch(e) {
-      throw e;
-    }
-  },
-  
-  playFallbackBeep() {
-    if (!this.audioContext) return;
+  attemptPlay(soundUrl, soundName) {
+    const sound = new Audio(soundUrl);
+    sound.volume = 0.7;
     
-    // Create a simple beep sound
-    const oscillator = this.audioContext.createOscillator();
-    const gainNode = this.audioContext.createGain();
+    sound.addEventListener('canplay', () => {
+      console.log('Audio can play, attempting playback...');
+    });
     
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime);
-    gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+    sound.addEventListener('error', (e) => {
+      console.error('Audio element error:', e);
+      console.error('Error code:', sound.error ? sound.error.code : 'unknown');
+    });
     
-    oscillator.connect(gainNode);
-    gainNode.connect(this.audioContext.destination);
+    sound.addEventListener('load', () => {
+      console.log('Audio loaded successfully');
+    });
     
-    oscillator.start();
-    oscillator.stop(this.audioContext.currentTime + 0.1);
+    console.log('Attempting playback...');
+    sound.play()
+      .then(() => console.log('Playback successful'))
+      .catch(e => console.error('Playback failed:', e));
   }
 };
-
-// Initialize on first user interaction
-document.addEventListener('click', () => {
-  if (!AudioManager.audioContext) {
-    AudioManager.init();
-  }
-}, { once: true });
 
 /*
 // Initialize on first user interaction
