@@ -7,6 +7,18 @@ and English (en) versions. When adding new UI elements:
 3. Update the updateLanguage() function to handle the new text elements
 */
 
+if (typeof AudioManager !== 'undefined') {
+  AudioManager = {
+    play(soundName) {
+      try {
+        const sound = new Audio(`/sounds/${soundName}.mp3?t=${Date.now()}`);
+        sound.volume = 0.7;
+        sound.play().catch(() => {});
+      } catch(e) {}
+    }
+  };
+}
+
 const LANGUAGES = {
     es: {
         unlimitedAttempts: "Intentos ilimitados",
@@ -5291,51 +5303,12 @@ function getCorrectSoundPath(filename) {
 // Audio Manager with local files
 const AudioManager = {
   play(soundName) {
-    console.log('=== AUDIO DEBUG ===');
-    console.log('Attempting to play:', soundName);
-    
-    const soundUrl = `sounds/${soundName}.mp3`;
-    console.log('Sound URL:', soundUrl);
-    
-    // Test if the file actually exists and is accessible
-    fetch(soundUrl, { method: 'HEAD' })
-      .then(response => {
-        console.log('HTTP Status:', response.status, response.statusText);
-        console.log('Content-Type:', response.headers.get('Content-Type'));
-        console.log('Content-Length:', response.headers.get('Content-Length'));
-        
-        if (response.ok) {
-          this.attemptPlay(soundUrl, soundName);
-        } else {
-          console.error('File not found or inaccessible');
-        }
-      })
-      .catch(error => {
-        console.error('Fetch error:', error);
-      });
-  },
-  
-  attemptPlay(soundUrl, soundName) {
-    const sound = new Audio(soundUrl);
-    sound.volume = 0.7;
-    
-    sound.addEventListener('canplay', () => {
-      console.log('Audio can play, attempting playback...');
-    });
-    
-    sound.addEventListener('error', (e) => {
-      console.error('Audio element error:', e);
-      console.error('Error code:', sound.error ? sound.error.code : 'unknown');
-    });
-    
-    sound.addEventListener('load', () => {
-      console.log('Audio loaded successfully');
-    });
-    
-    console.log('Attempting playback...');
-    sound.play()
-      .then(() => console.log('Playback successful'))
-      .catch(e => console.error('Playback failed:', e));
+    try {
+      // Absolute URL with cache buster
+      const sound = new Audio(`/sounds/${soundName}.mp3?t=${Date.now()}`);
+      sound.volume = 0.7;
+      sound.play().catch(() => {}); // Silent catch
+    } catch(e) {}
   }
 };
 
