@@ -5290,30 +5290,32 @@ function getCorrectSoundPath(filename) {
 
 // Audio Manager with local files
 const AudioManager = {
-  // No pre-initialization, create audio elements on-demand
-  play(soundName) {
-    try {
-      // Create a NEW audio element each time - this bypasses the refresh issue
-      const sound = new Audio(`sounds/${soundName}.mp3`);
+  // 2. MODIFY paths to use the corrector
+  sounds: {
+    move: new Audio(getCorrectSoundPath('move.mp3')),
+    guess: new Audio(getCorrectSoundPath('guess.mp3')),
+    win: new Audio(getCorrectSoundPath('win.mp3')),
+    loss: new Audio(getCorrectSoundPath('loss.mp3'))
+  },
+  
+  init() {
+    Object.values(this.sounds).forEach(sound => {
       sound.volume = 0.7;
-      
-      // Try to play immediately
-      sound.play().catch(e => {
-        console.log(soundName, 'will work after user interaction');
-        
-        // Set up a one-time play on next user interaction
-        const playOnInteraction = () => {
-          sound.play().catch(e => {});
-          document.removeEventListener('click', playOnInteraction);
-          document.removeEventListener('keydown', playOnInteraction);
-        };
-        
-        document.addEventListener('click', playOnInteraction);
-        document.addEventListener('keydown', playOnInteraction);
-      });
-      
+      sound.load();
+    });
+  },
+  
+  play(soundName) {
+    // 3. ADD this error catch
+    try {
+      this.sounds[soundName].currentTime = 0;
+      this.sounds[soundName].play().catch(e => console.warn(soundName, e));
     } catch(e) {
-      console.error('Audio error:', e);
+      console.error("Audio error:", e);
+      // 4. ADD silent retry for Chrome
+      document.addEventListener('click', () => {
+        this.sounds[soundName].play();
+      }, { once: true });
     }
   }
 };
