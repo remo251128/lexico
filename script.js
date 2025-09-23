@@ -6664,6 +6664,6 @@ window.addEventListener('DOMContentLoaded', () => {
   handleUrlRouting(); // New URL processor
 });
 
-// Handle back/forward button navigation
+// Handle back and forward button navigation
 window.addEventListener('popstate', handleUrlRouting);
 
