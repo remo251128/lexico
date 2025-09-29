@@ -5009,6 +5009,25 @@ chileformer: [
   "sofia",  "sonia",  "susan", "talia", "telma",
   "tania",  
  "wanda", "xenia", "moira","betty","vilma"
+    ],
+    nombres_perro_ingles: [
+        "buddy","rocky","daisy","scout","lucky","teddy","ollie","rosie","cocoa","molly","riley","sadie","bella","sugar","angel","penny",
+        "maxie","holly","pearl","storm","chief","jenny","fritz","candy","rusty","baron","happy","lassy","tiger","bruno","sammy","harry",
+        "benny","gizmo","jazzy","zorro","mango","olive","amber","atlas","ariel","basil","belle","fudge","mocha","latte","bingo","marlo",
+        "marie","marco","mario","mikey","mason","marty","midge","cliff","clara","clyde","caper","cyrus","cubby","pepsi","piper","paris",
+        "polly","bongo","bento","bobby","ralph","simon","henry","lucas",
+        "oscar","felix","danny","ellie","vicky","vince","jules","nolan","brody",
+        "simba","dingo","rango","macho","moony","bambi","floyd","patch","flash","miles","homer","clark","brady",
+        "mabel","margo","ritzy","raven","cider","koala","noble","nicky","percy","pooka","spike","chico","chloe","cathy","casey",
+        "cason","cappy","cairo","cedar","shiro","ninja","sunny","buzzy","honey","tango","rhino","ellen","roger","edgar","edwin",
+        "elvis","ember","groot","chewy","ozzie","wally","willy","titus","tyler","trudy","ringo","rambo","racer","pooch","peeko",
+        "petey","pablo","orion","river","ocean","sable","sandy","snoot","sniff","yoshi","kirby","yukon","denny","denis",
+        "eddie","bruce","darcy","delta","ellis","arnie","barry","baker","dozer","eagle","fable",
+        "frank","gabby","india","josie","katie","kenny","linda",
+        "luigi","moose","nicki","otter","ozone","pongo","poppa","poppy","quill","queen","rowdy","rosco",
+        "rocco","rocko","shawn","shady","shiva","shrek","snoop","sonic","tempo","terry","texas","titan","topaz",
+        "tubby","tulip","tyson","ultra","vinny","vapor","vader","xenia","yappy","zebra","zelda","zappy",
+        "chevy","alfie","sasha","monty","pippa","dusty","chase","dolly"
     ]
 };
 
@@ -5072,6 +5091,16 @@ const VERSION_CONFIG = {
             valid: WORD_LISTS.nombres_mujer_espanol
         },
         category: { es: "Nombres", en: "Names" }
+    },
+    'dognames': { //  EL NOMBRE DE ESTE OBJETO SE USA PARA EL URL! --- NO USAR URLS YA USADAS EN VRSIONES VIEJAS O NUEVAS Y NO USAR CARCTERES ESPECIALES --- 
+        title: { es: "Nombres de Perro (Inglés)", en: "Dog Names" },
+        icon: "🐶",
+        background: "url('https://media.istockphoto.com/id/1490825138/vector/dog-paw-seamless-pattern-vector-illustration-of-animal-paw-print-texture.jpg?s=612x612&w=0&k=20&c=JQzSsehrqrRzE3iB59E8xVVMdeBIeg0DSjqpeGP9UL4=')",
+        wordLists: {
+            answers: WORD_LISTS.nombres_perro_ingles,
+            valid: WORD_LISTS.general_ingles
+        },
+        category: { es: "Animales", en: "Animals" }
     }
 
     
