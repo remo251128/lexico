@@ -5108,6 +5108,14 @@ const VERSION_CONFIG = {
 };
 
 
+function updateFacebookURL() {
+    const metaUrl = document.querySelector('meta[property="og:url"]');
+    if (metaUrl) {
+        metaUrl.content = window.location.href;
+    }
+}
+
+
 function handleUrlRouting() {
     console.log("🔄 Handling URL:", window.location.pathname);
     console.log("VERSION_CONFIG keys:", Object.keys(VERSION_CONFIG));
@@ -5203,6 +5211,8 @@ function handleUrlRouting() {
     
     // 5. Clear the sessionStorage redirect now that we've handled it via the URL
     sessionStorage.removeItem('redirect');
+
+    updateFacebookURL();
 }
 
 
@@ -6722,6 +6732,8 @@ function updateCountryUI() {
     document.getElementById('other-versions-btn')?.addEventListener('click', () => {
         document.getElementById('game-modes-modal').style.display = 'flex';
     });
+
+    updateFacebookURL();
 }
 
 
