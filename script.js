@@ -5108,25 +5108,6 @@ const VERSION_CONFIG = {
 };
 
 
-function updateFacebookURL() {
-    // Force update ALL URL meta tags
-    const currentURL = window.location.href;
-    
-    // Update og:url
-    const ogUrl = document.querySelector('meta[property="og:url"]');
-    if (ogUrl) ogUrl.content = currentURL;
-    
-    // Also update canonical URL and twitter:url
-    const canonical = document.querySelector('link[rel="canonical"]');
-    if (canonical) canonical.href = currentURL;
-    
-    const twitterUrl = document.querySelector('meta[property="twitter:url"]');
-    if (twitterUrl) twitterUrl.content = currentURL;
-    
-    console.log('Updated Facebook URL to:', currentURL);
-}
-
-
 function handleUrlRouting() {
     console.log("🔄 Handling URL:", window.location.pathname);
     console.log("VERSION_CONFIG keys:", Object.keys(VERSION_CONFIG));
@@ -5222,8 +5203,6 @@ function handleUrlRouting() {
     
     // 5. Clear the sessionStorage redirect now that we've handled it via the URL
     sessionStorage.removeItem('redirect');
-
-    setTimeout(updateFacebookURL, 100);
 }
 
 
@@ -6743,8 +6722,6 @@ function updateCountryUI() {
     document.getElementById('other-versions-btn')?.addEventListener('click', () => {
         document.getElementById('game-modes-modal').style.display = 'flex';
     });
-
-    setTimeout(updateFacebookURL, 100);
 }
 
 
