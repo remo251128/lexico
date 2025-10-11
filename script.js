@@ -6421,39 +6421,117 @@ function showStats() {
 
 // Share stats
 function shareStats() {
-    const text = `Boludle - Estadísticas\n\nJugadas: ${stats.gamesPlayed}\nVictorias: ${stats.gamesWon}\nRacha actual: ${stats.currentStreak}\nRacha máxima: ${stats.maxStreak}\n\nDistribución de intentos:\n${stats.guessDistribution.map((count, i) => `${i + 1}: ${count}`).join('\n')}`;
+    const lang = LANGUAGES[currentLanguage];
+    
+    // Get the current game version name
+    let gameVersion;
+    if (VERSION_CONFIG[currentCountry]) {
+        gameVersion = VERSION_CONFIG[currentCountry].title[currentLanguage];
+    } else if (currentCountry === 'football-players') {
+        gameVersion = lang.footballPlayers;
+    } else {
+        const countryNames = {
+            'argentina': 'Argentina', 'chile': 'Chile', 'peru': 'Perú', 
+            'colombia': 'Colombia', 'mexico': 'México'
+        };
+        gameVersion = countryNames[currentCountry] || 'Wordz';
+    }
+    
+    // Build stats text without guess distribution
+    let statsText = '';
+    if (currentLanguage === 'es') {
+        statsText = `¡Mira mis estadísticas en Wordz! ¿Puedes superarme?\n\n` +
+                   `Wordz ${gameVersion}\n` +
+                   `Jugadas: ${stats.gamesPlayed}\n` +
+                   `Victorias: ${stats.gamesWon}\n` +
+                   `Racha actual: ${stats.currentStreak}\n` +
+                   `Racha máxima: ${stats.maxStreak}\n\n` +
+                   `${window.location.href}`;
+    } else {
+        statsText = `Check out my stats in Wordz! Can you top me?\n\n` +
+                   `Wordz ${gameVersion}\n` +
+                   `Played: ${stats.gamesPlayed}\n` +
+                   `Wins: ${stats.gamesWon}\n` +
+                   `Current Streak: ${stats.currentStreak}\n` +
+                   `Max Streak: ${stats.maxStreak}\n\n` +
+                   `${window.location.href}`;
+    }
     
     if (navigator.share) {
         navigator.share({
-            title: 'Mis estadísticas de Boludle',
-            text: text,
+            title: `Wordz ${gameVersion} Stats`,
+            text: statsText,
             url: window.location.href
         }).catch(() => {
-            copyToClipboard(text);
-            showMessage('Estadísticas copiadas');
+            copyToClipboard(statsText);
+            showMessage(lang.share);
         });
     } else {
-        copyToClipboard(text);
-        showMessage('Estadísticas copiadas');
+        copyToClipboard(statsText);
+        showMessage(lang.share);
     }
 }
 
 // Share result
 function shareResult() {
-    const resultText = generateShareText();
+    const lang = LANGUAGES[currentLanguage];
+    const guessCount = guesses.length === 6 ? 'X' : guesses.length;
+    
+    // Get the current game version name
+    let gameVersion;
+    if (VERSION_CONFIG[currentCountry]) {
+        gameVersion = VERSION_CONFIG[currentCountry].title[currentLanguage];
+    } else if (currentCountry === 'football-players') {
+        gameVersion = lang.footballPlayers;
+    } else {
+        const countryNames = {
+            'argentina': { es: 'Argentina', en: 'Argentina' },
+            'chile': { es: 'Chile', en: 'Chile' },
+            'peru': { es: 'Perú', en: 'Peru' },
+            'colombia': { es: 'Colombia', en: 'Colombia' },
+            'mexico': { es: 'México', en: 'Mexico' }
+        };
+        gameVersion = countryNames[currentCountry] ? countryNames[currentCountry][currentLanguage] : 'Wordz';
+    }
+    
+    // Build result text based on win/loss
+    let resultText = '';
+    const isWin = guesses[guesses.length - 1] === word;
+    
+    if (currentLanguage === 'es') {
+        if (isWin) {
+            resultText = `¡Acabo de ganar una partida de Wordz! ¿Podrás hacerlo tú también?\n\n` +
+                        `Wordz ${gameVersion} ${guessCount}/6\n\n` +
+                        `${window.location.href}`;
+        } else {
+            resultText = `Acabo de perder una partida de Wordz. ¿Crees que podrías ganarla?\n\n` +
+                        `Wordz ${gameVersion} ${guessCount}/6\n\n` +
+                        `${window.location.href}`;
+        }
+    } else {
+        if (isWin) {
+            resultText = `I just won in a game of Wordz! Can you do it too?\n\n` +
+                        `Wordz ${gameVersion} ${guessCount}/6\n\n` +
+                        `${window.location.href}`;
+        } else {
+            resultText = `I just lost in a game of Wordz. Do you think you could beat it?\n\n` +
+                        `Wordz ${gameVersion} ${guessCount}/6\n\n` +
+                        `${window.location.href}`;
+        }
+    }
     
     if (navigator.share) {
         navigator.share({
-            title: `Boludle ${guesses.length}/6`,
+            title: `Wordz ${gameVersion} ${guessCount}/6`,
             text: resultText,
             url: window.location.href
         }).catch(() => {
             copyToClipboard(resultText);
-            showMessage('Resultado copiado');
+            showMessage(lang.share);
         });
     } else {
         copyToClipboard(resultText);
-        showMessage('Resultado copiado');
+        showMessage(lang.share);
     }
 }
 
