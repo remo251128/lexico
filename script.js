@@ -5028,6 +5028,23 @@ chileformer: [
         "rocco","rocko","shawn","shady","shiva","shrek","snoop","sonic","tempo","terry","texas","titan","topaz",
         "tubby","tulip","tyson","ultra","vinny","vapor","vader","xenia","yappy","zebra","zelda","zappy",
         "chevy","alfie","sasha","monty","pippa","dusty","chase","dolly"
+    ],
+    nombres_perro_espanol: [
+        "bruno", "nieve", "linda", "negra", "negro", "rocco", "chico", "reina", "macho", 
+  "bimbo", "samba", "tigre", "tango", "rufus", "dulce", "ricky", "chula",
+  "neron", "barto", "bongo", "chato", "vicky",
+   "rolly", "timon", "rocky", "flaco", "tomas", "gordo", "pumba", "lucho",
+  "hueso", "cobra", "celia", "menta", "jango", "tania", "rosco",
+  "lupin", "mango", "peque", "turbo", "simba", "bella",
+   "dante", "tobby", "rubio", "candy", "pelos",
+   "chino", "dingo", "rambo",
+  "zorro", "flora", "fiona", "cocoa", "milos", 
+   "cobre", "mauro", "bobby", "brisa", "terry", "sasha", "berta", "furia", "margo",
+   "felix", "lindo", "perry", "molly", "ringo", "bicho",
+   "nacho", "chulo", "marlo",  
+  "chapi", "fredo", "trufa", "choco", "donut", "baloo", "conan", "dumbo", "golfo", "brian", "frodo",
+  "balto", "flash", "groot", "draco", "goofy", "bambi", "laika",
+  "simon", "lucas", "chimo", "babas", "birra", "fiera", "bingo", "crack", "cacao", "pecas", "astro"
     ]
 };
 
@@ -5099,6 +5116,16 @@ const VERSION_CONFIG = {
         wordLists: {
             answers: WORD_LISTS.nombres_perro_ingles,
             valid: WORD_LISTS.general_ingles
+        },
+        category: { es: "Animales", en: "Animals" }
+    },
+    'dognamesesp': { //  EL NOMBRE DE ESTE OBJETO SE USA PARA EL URL! --- NO USAR URLS YA USADAS EN VRSIONES VIEJAS O NUEVAS Y NO USAR CARCTERES ESPECIALES --- 
+        title: { es: "Nombres de Perro", en: "Dog Names (Spanish)" },
+        icon: "🐕",
+        background: "url('https://media.istockphoto.com/id/1490825138/vector/dog-paw-seamless-pattern-vector-illustration-of-animal-paw-print-texture.jpg?s=612x612&w=0&k=20&c=JQzSsehrqrRzE3iB59E8xVVMdeBIeg0DSjqpeGP9UL4=')",
+        wordLists: {
+            answers: WORD_LISTS.nombres_perro_espanol,
+            valid: WORD_LISTS.general
         },
         category: { es: "Animales", en: "Animals" }
     }
