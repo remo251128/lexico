@@ -5045,6 +5045,19 @@ chileformer: [
   "chapi", "fredo", "trufa", "choco", "donut", "baloo", "conan", "dumbo", "golfo", "brian", "frodo",
   "balto", "flash", "groot", "draco", "goofy", "bambi", "laika",
   "simon", "lucas", "chimo", "babas", "birra", "fiera", "bingo", "crack", "cacao", "pecas", "astro"
+    ],
+    animales_ingles: [
+    "bison", "camel", "tapir", "panda",
+  "lemur", "hyena", "sloth", "otter", "gecko",
+
+  "skink", "snake", "shark", "whale", "guppy",
+  "trout", "prawn", "krill", "squid", "eagle",
+
+  "heron", "egret", "macaw", "quail", "stork",
+  "raven", "robin", "mouse", "civet", "dhole",
+
+  "goral", "roach", "louse", "zebra", "sheep", "goose", "horse", "gator", "crane", "coati", "dingo", "human", "koala",
+  "llama", "liger", "moose", "okapi", "snail", "skunk", "hound", "rhino", "viper", "shrew", "chimp"
     ]
 };
 
@@ -5125,6 +5138,16 @@ const VERSION_CONFIG = {
         background: "url('https://media.istockphoto.com/id/1490825138/vector/dog-paw-seamless-pattern-vector-illustration-of-animal-paw-print-texture.jpg?s=612x612&w=0&k=20&c=JQzSsehrqrRzE3iB59E8xVVMdeBIeg0DSjqpeGP9UL4=')",
         wordLists: {
             answers: WORD_LISTS.nombres_perro_espanol,
+            valid: WORD_LISTS.general
+        },
+        category: { es: "Animales", en: "Animals" }
+    },
+    'animals': { //  EL NOMBRE DE ESTE OBJETO SE USA PARA EL URL! --- NO USAR URLS YA USADAS EN VRSIONES VIEJAS O NUEVAS Y NO USAR CARCTERES ESPECIALES --- 
+        title: { es: "Animales (Inglés)", en: "Animals" },
+        icon: "🦁",
+        background: "url('https://i.pinimg.com/736x/13/bf/d0/13bfd0096d01167271c3200b71623231.jpg')",
+        wordLists: {
+            answers: WORD_LISTS.animales_ingles,
             valid: WORD_LISTS.general
         },
         category: { es: "Animales", en: "Animals" }
