@@ -5148,7 +5148,7 @@ const VERSION_CONFIG = {
         background: "url('https://i.pinimg.com/736x/13/bf/d0/13bfd0096d01167271c3200b71623231.jpg')",
         wordLists: {
             answers: WORD_LISTS.animales_ingles,
-            valid: WORD_LISTS.general
+            valid: WORD_LISTS.general_ingles
         },
         category: { es: "Animales", en: "Animals" }
     }
