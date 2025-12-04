@@ -5057,7 +5057,25 @@ chileformer: [
   "raven", "robin", "mouse", "civet", "dhole",
 
   "goral", "roach", "louse", "zebra", "sheep", "goose", "horse", "gator", "crane", "coati", "dingo", "human", "koala",
-  "llama", "liger", "moose", "okapi", "snail", "skunk", "hound", "rhino", "viper", "shrew", "chimp"
+  "llama", "liger", "moose", "okapi", "snail", "skunk", "hound", "rhino", "viper", "shrew", "chimp", "cobra"
+    ],
+    animales_espanol: [
+    "aguti",
+  "burro",
+  "cebra",
+  "garza",
+  "ganso",
+  "lince",
+  "llama",
+  "morsa",
+  "ocapi",
+  "perca",
+  "puma",
+  "tenca",
+  "tordo",
+  "zorro", "ceibo", "huron", "panda", "koala", "tigre", "raton", "ligre", "tapir", "lemur", "hiena", "tucan", "oveja", "coati", "dingo", "perro", "gecko",
+  "cobra", "huron", "piojo", "tejon", "abeja", "mosca", "araña", "erizo", "acaro", "bufeo", "ibice", "cabra", "carpa", "cerdo", "chita", "cisne", "jerbo",
+  "gallo", "pollo", "gamba", "gibon", "morsa", "oruga", "ostra", "piton", "pulpo", "sepia", "simio", "yegua", "mamut", "mirlo"
     ]
 };
 
@@ -5149,6 +5167,16 @@ const VERSION_CONFIG = {
         wordLists: {
             answers: WORD_LISTS.animales_ingles,
             valid: WORD_LISTS.general_ingles
+        },
+        category: { es: "Animales", en: "Animals" }
+    },
+    'animalsesp': { //  EL NOMBRE DE ESTE OBJETO SE USA PARA EL URL! --- NO USAR URLS YA USADAS EN VRSIONES VIEJAS O NUEVAS Y NO USAR CARCTERES ESPECIALES --- 
+        title: { es: "Animales", en: "Animals (Spanish)" },
+        icon: "🐯",
+        background: "url('https://i.pinimg.com/736x/13/bf/d0/13bfd0096d01167271c3200b71623231.jpg')",
+        wordLists: {
+            answers: WORD_LISTS.animales_espanol,
+            valid: WORD_LISTS.general
         },
         category: { es: "Animales", en: "Animals" }
     }
