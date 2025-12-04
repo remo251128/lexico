@@ -5076,7 +5076,31 @@ chileformer: [
   "zorro", "ceibo", "huron", "panda", "koala", "tigre", "raton", "ligre", "tapir", "lemur", "hiena", "tucan", "oveja", "coati", "dingo", "perro", "gecko",
   "cobra", "huron", "piojo", "tejon", "abeja", "mosca", "araña", "erizo", "acaro", "bufeo", "ibice", "cabra", "carpa", "cerdo", "chita", "cisne", "jerbo",
   "gallo", "pollo", "gamba", "gibon", "morsa", "oruga", "ostra", "piton", "pulpo", "sepia", "simio", "yegua", "mamut", "mirlo"
+    ],
+    nombres_gato_ingles: [
+    "lucky", "kitty",
+  "tiger",
+  "bella",
+  "sunny",
+  "rocky",
+  "boots",
+  "snowy",
+  "socks",
+  "smoky",
+  "pearl",
+  "olive",
+  "mocha",
+  "honey",
+  "teddy",
+  "rosie",
+  "mango",
+  "maple", "felix", "oscar", "simba", "dusty", "rusty", "buddy", "romeo", "gizmo", "ziggy", "benny", "sammy",
+  "sasha", "tommy", "sushi", "simon", "shiva", "salem", "ringo", "ninja", "riley", "percy", "pongo", "nacho",
+  "monty", "mochi", "mushy", "micky", "lucas", "gucci", "furry", "fudge", "bruce", "binky", "billy", "alvin",
+  "fiona", "kiara", "molly", "sandy", "misty", "missy"
     ]
+
+
 };
 
 
@@ -5177,6 +5201,16 @@ const VERSION_CONFIG = {
         wordLists: {
             answers: WORD_LISTS.animales_espanol,
             valid: WORD_LISTS.general
+        },
+        category: { es: "Animales", en: "Animals" }
+    },
+    'catnames': { //  EL NOMBRE DE ESTE OBJETO SE USA PARA EL URL! --- NO USAR URLS YA USADAS EN VRSIONES VIEJAS O NUEVAS Y NO USAR CARCTERES ESPECIALES --- 
+        title: { es: "Nombres de Gato (Inglés)", en: "Cat Names" },
+        icon: "🐱",
+        background: "url('https://i.pinimg.com/736x/06/a0/a4/06a0a4e1bd61eff169027aadba1d6c44.jpg')",
+        wordLists: {
+            answers: WORD_LISTS.nombres_gato_ingles,
+            valid: WORD_LISTS.general_ingles
         },
         category: { es: "Animales", en: "Animals" }
     }
