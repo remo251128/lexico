@@ -5098,8 +5098,13 @@ chileformer: [
   "sasha", "tommy", "sushi", "simon", "shiva", "salem", "ringo", "ninja", "riley", "percy", "pongo", "nacho",
   "monty", "mochi", "mushy", "micky", "lucas", "gucci", "furry", "fudge", "bruce", "binky", "billy", "alvin",
   "fiona", "kiara", "molly", "sandy", "misty", "missy"
+    ],
+    nombres_gato_espanol: [
+    "bella", "teddy", "mango", "maple", "felix", "oscar", "tomas", "simba", "romeo", "sasha", "sushi", "salem",
+    "ninja", "ringo", "nacho", "michi", "micky", "lucas", "alvin", "nieve", "pelos", "tigre", "lince", "tango",
+    "lucky", "rufus", "perla", "bicho", "bambu", "chita", "draco", "rambo", "dumbo", "orion", "elvis", "poker",
+    "akira", "agata", "cosmo", "atila", "misha", "bruno", "dobby", "trufa", "laika", "fiona", "kitty", "apolo"
     ]
-
 
 };
 
@@ -5211,6 +5216,16 @@ const VERSION_CONFIG = {
         wordLists: {
             answers: WORD_LISTS.nombres_gato_ingles,
             valid: WORD_LISTS.general_ingles
+        },
+        category: { es: "Animales", en: "Animals" }
+    },
+    'catnamesesp': { //  EL NOMBRE DE ESTE OBJETO SE USA PARA EL URL! --- NO USAR URLS YA USADAS EN VRSIONES VIEJAS O NUEVAS Y NO USAR CARCTERES ESPECIALES --- 
+        title: { es: "Nombres de Gato", en: "Cat Names (Spanish)" },
+        icon: "🐈",
+        background: "url('https://i.pinimg.com/736x/06/a0/a4/06a0a4e1bd61eff169027aadba1d6c44.jpg')",
+        wordLists: {
+            answers: WORD_LISTS.nombres_gato_espanol,
+            valid: WORD_LISTS.general
         },
         category: { es: "Animales", en: "Animals" }
     }
