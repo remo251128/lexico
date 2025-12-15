@@ -5285,10 +5285,10 @@ const VERSION_CONFIG = {
     'pokemon': { //  EL NOMBRE DE ESTE OBJETO SE USA PARA EL URL! --- NO USAR URLS YA USADAS EN VRSIONES VIEJAS O NUEVAS Y NO USAR CARCTERES ESPECIALES --- 
         title: { es: "Pokémon", en: "Pokémon" },
         icon: "⚡",
-        background: "url('https://i.pinimg.com/736x/9d/f6/19/9df619c9e7d26f34b4d609499fd0090b.jpg')",
+        background: "url('https://i.pinimg.com/736x/08/cb/fc/08cbfc2aff3fe100857527ac6bc83953.jpg')",
         wordLists: {
             answers: WORD_LISTS.pokemon,
-            valid: WORD_LISTS.general
+            valid: WORD_LISTS.general_doble
         },
         category: { es: "Anime", en: "Anime" }
     }
