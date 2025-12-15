@@ -5104,6 +5104,59 @@ chileformer: [
     "ninja", "ringo", "nacho", "michi", "micky", "lucas", "alvin", "nieve", "pelos", "tigre", "lince", "tango",
     "lucky", "rufus", "perla", "bicho", "bambu", "chita", "draco", "rambo", "dumbo", "orion", "elvis", "poker",
     "akira", "agata", "cosmo", "atila", "misha", "bruno", "dobby", "trufa", "laika", "fiona", "kitty", "apolo"
+    ],
+    pokemon: [
+        "absol",
+  "aipom",
+  "arbok",
+  "azelf",
+  "bagon",
+  "budew",
+  "burmy",
+  "chiyu",
+  "deino",
+  "ditto",
+  "doduo",
+  "eevee",
+  "ekans",
+  "entei",
+  "gible",
+  "gloom",
+  "golem",
+  "goomy",
+  "hoopa",
+  "hypno",
+  "inkay",
+  "klang",
+  "klawf",
+  "klink",
+  "kubfu",
+  "lokix",
+  "lotad",
+  "lugia",
+  "luxio",
+  "magby",
+  "minun",
+  "munna",
+  "nacli",
+  "numel",
+  "paras",
+  "pawmi",
+  "pawmo",
+  "pichu",
+  "ralts",
+  "riolu",
+  "rotom",
+  "shinx",
+  "snivy",
+  "tepig",
+  "throh",
+  "toxel",
+  "unown",
+  "yanma",
+  "zorua",
+  "zubat"
+
     ]
 
 };
@@ -5228,6 +5281,16 @@ const VERSION_CONFIG = {
             valid: WORD_LISTS.general
         },
         category: { es: "Animales", en: "Animals" }
+    },
+    'pokemon': { //  EL NOMBRE DE ESTE OBJETO SE USA PARA EL URL! --- NO USAR URLS YA USADAS EN VRSIONES VIEJAS O NUEVAS Y NO USAR CARCTERES ESPECIALES --- 
+        title: { es: "Pokémon", en: "Pokémon" },
+        icon: "⚡",
+        background: "url('https://i.pinimg.com/736x/9d/f6/19/9df619c9e7d26f34b4d609499fd0090b.jpg')",
+        wordLists: {
+            answers: WORD_LISTS.pokemon,
+            valid: WORD_LISTS.general
+        },
+        category: { es: "Anime", en: "Anime" }
     }
 
     
